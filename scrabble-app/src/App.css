@@ -1,4 +1,10 @@
 .App {
   text-align: center;
+  display: grid;
 }
 
+.centre{
+  display: grid;
+  place-content: center;
+  row-gap: 20px;
+}
