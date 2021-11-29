@@ -1,5 +1,8 @@
 #scrabble-board{
     height: 800px;
     width: 800px;
+    display: grid;
+    grid-template-columns: repeat(15,53.4px);
+    grid-template-rows: repeat(15, 53.4px);
     background-color:#4fa66f;
 }
