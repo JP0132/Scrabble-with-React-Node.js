@@ -1,0 +1,39 @@
+.square {
+    width: 53.4px;
+    height: 53.4px;
+    border: 1px solid #ffffff;
+    text-align: center;
+    font-weight: bold;
+    color: #000000;
+    padding: 13.35px 0;
+    box-sizing: border-box;
+}
+
+.tw {
+    background-color: #c93d3c;
+}
+
+.dw {
+    background-color: #ffc1c2;
+}
+
+.tl {
+    background-color: #2a50f9;
+}
+
+.dl {
+    background-color: #a8d8ef;
+}
+
+.blank {
+    background-color: #4fa66f;
+}
+
+.star{
+    height: 53.4px;
+    width: 53.4px;
+    background-color: #ffc1c2;
+    border: none;
+    border-radius: 50%;
+    
+}
