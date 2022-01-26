@@ -26,6 +26,6 @@
         "X":{"letter":"X","number":1,"points":8},
         "Y":{"letter":"Y","number":2,"points":4},
         "Z":{"letter":"Z","number":1,"points":10},
-        "?":{"number":2,"points":0}
-    
+        "?":{"number":2,"points":0},
+        "letters":["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","?"]
 }
