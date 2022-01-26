@@ -28,7 +28,7 @@ const Rack = () => {
    
     //console.log(rackTile);
     for(let i = 0; i < playerRack.length; i++){
-        rackLetters.push(<Tile letter = {playerRack[i]}/>);
+        rackLetters.push(<Tile key={i} letter = {playerRack[i]}/>);
     }
    
    

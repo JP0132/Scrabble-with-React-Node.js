@@ -37,7 +37,7 @@ const Board = () => {
             //console.log(coords);
             //Save it to the array
             //Creating an square passing the type and coordinates
-            board.push(<Square squareType = {val} coords = {coords}/>);
+            board.push(<Square key={coords} squareType = {val} coords = {coords}/>);
         }
     }
 

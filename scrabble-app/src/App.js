@@ -7,8 +7,8 @@ function App() {
     <div className="App">
       <h1 className="appTitle">AIECHO SCRABBLE</h1>
       <div className="centre">
-        <Board/>
-        <Rack/>
+        <Board key="board"/>
+        <Rack key="playerRack"/>
       </div>
       
     </div>
