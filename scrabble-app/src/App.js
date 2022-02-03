@@ -1,18 +1,12 @@
 import './App.css';
-import Board from './Components/Board';
-import Rack from './Components/Rack';
+import Game from './Container/Game';
 
 function App() {
   return (
-    <div className="App">
-      <h1 className="appTitle">AIECHO SCRABBLE</h1>
-      <div className="centre">
-        <Board key="board"/>
-        <Rack key="playerRack"/>
-      </div>
-      
-    </div>
+   <Game/>
+   
   );
 }
 
 export default App;
+
