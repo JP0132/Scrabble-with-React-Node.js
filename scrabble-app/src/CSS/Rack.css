@@ -1,7 +1,9 @@
 .rack{
-    width: 800px;
-    height: 100px;
+    width: 500px;
+    height: 80px;
+    padding: 10px;
     background-color: #4fa66f;
     display: flex;
     flex-direction: row;
+    box-sizing: border-box;
 }
