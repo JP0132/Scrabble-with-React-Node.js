@@ -1,64 +1,35 @@
-import "../CSS/Rack.css"
-import Tile from "./Tile";
-import Letters from "../WordList/letters.json";
-import LetterData from '../Helper/LetterData';
-import GenerateMove from "../Helper/GenerateMoves";
-import GameData from "../JSONData/GameData.json"
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import GameData from "../../JSONData/GameData.json";
+import {DrawTiles} from "./RackHelper";
+import Tile from "../Tile/Tile";
+import "../../StyleSheets/Rack.css"
+
 
 const Rack = () => {
-    const [currentPlayerRack, setPlayerRack] = useState(GameData.playerRack);
+    const [userRack, setUserRack] = useState(GameData.playerRack);
+
+    useEffect(()=>{
+        setUserRack(userRack);
+
+    }, [GameData.playerRack])
+
     var newTiles;
-    if(currentPlayerRack.length < 7){
-        let letterData = new LetterData();
-        let noOfTilesNeeded = 7 - currentPlayerRack.length;
-        newTiles = letterData.randomLetters(noOfTilesNeeded);  
-        var newRack = currentPlayerRack.concat(newTiles);
+    if(userRack.length < 7){
+        let noOfTilesNeeded = 7 - userRack.length;
+        newTiles = DrawTiles(noOfTilesNeeded);
+        var newRack = userRack.concat(newTiles);
         GameData.playerRack = newRack;
-        setPlayerRack(newRack);
     }
-   
+
     let rackTiles = [];
-    for(let i = 0; i < currentPlayerRack.length; i++){
-         rackTiles.push(<Tile key={i} letter = {currentPlayerRack[i]}/>);
+    for(let i = 0; i < userRack.length; i++){
+        rackTiles.push(<Tile key={i} letter = {userRack[i]}/>)
     }
-
-   
-   
-  
-   
-    
-    
-    // var playerRack = [];
-    // console.log("Current Player",GameData.playerRack);
-    // if(GameData.playerRack.length === 0){
-    //     var letterData = new LetterData();
-    //     playerRack = letterData.randomLetters(7);
-    //     console.log("rack",playerRack);
-    // }
-
-    //var generatMove = new GenerateMove();
-    //let word = generatMove.generateWords(startingRack);
-    
-    //console.log(word);
-
-    // let rackLetters = [];
-   
-
-   
-    // //console.log(rackTile);
-    // for(let i = 0; i < playerRack.length; i++){
-    //     console.log(playerRack[i])
-    //     rackLetters.push(<Tile key={i} letter = {playerRack[i]}/>);
-    // }
-   
-   
-   
-   
-  
-    return (
+    return(
         <div className="rack">{rackTiles}</div>
-    );
+    )
+
+    
 }
- 
+
 export default Rack;
