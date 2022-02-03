@@ -1,14 +1,14 @@
 .tile{
-    line-height: 80px;
+    line-height: 53.4px;
     margin: 10px 10px 10px 10px;
-    width: 90px;
-    height: 80px;
+    width: 53.4px;
+    height: 53.4px;
     background-color: rgb(236, 225, 190);
    
 }
 
 .tileLetter{
-    font-size: 40px;
+    font-size: 20px;
     display: inline-block;
     vertical-align: middle;
     font-weight: bold;
@@ -17,9 +17,7 @@
 
 .tileNum{
     vertical-align:sub;
-    font-size: 20px; 
+    font-size: 10px; 
     font-weight: 500; 
-
     padding: 10px;
-
 }
