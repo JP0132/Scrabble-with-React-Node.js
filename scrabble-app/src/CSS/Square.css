@@ -9,27 +9,27 @@
     box-sizing: border-box;
 }
 
-.tw {
+.TW {
     background-color: #c93d3c;
 }
 
-.dw {
+.DW {
     background-color: #ffc1c2;
 }
 
-.tl {
+.TL {
     background-color: #2a50f9;
 }
 
-.dl {
+.DL {
     background-color: #a8d8ef;
 }
 
-.blank {
+.B {
     background-color: #4fa66f;
 }
 
-.star{
+.C{
     height: 53.4px;
     width: 53.4px;
     background-color: #ffc1c2;
