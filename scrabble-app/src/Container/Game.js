@@ -3,7 +3,8 @@ import Board from '../Components/Board/Board';
 import Rack from '../Components/Rack/Rack';
 import PlayBtn from '../Components/PlayBtn/PlayBtn';
 import GameData from '../JSONData/GameData.json'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import {MakeMove} from '../Helper/ComputerMove';
 
 
 const Game = (props) => {
@@ -12,6 +13,7 @@ const Game = (props) => {
         GameData.turnPlayer = "computer";
         console.log(GameData.turnPlayer);
         setComputerTurn(true);
+        let computerMove = MakeMove();
     }
     return(
         <div className='game'>
