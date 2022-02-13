@@ -1,4 +1,5 @@
 var fs = require('fs');
+const readline = require('readline');
 
 
 exports.calculateMove = (req, res) => {
@@ -6,8 +7,6 @@ exports.calculateMove = (req, res) => {
     console.log(req.body.rack);
     let rack = req.body.rack;
     //let g = new Gaddag("../scrabble-nodeJS/CollinsScrabbleWords(2019).txt");
-    
-
     
     res.json({
         "hello":"chris"
@@ -19,14 +18,30 @@ Concept of GADDAG
 Each word inserted n times => n representing the length of the word
 Each insertion has a special symbol
 Prefix is reversed
+GADDAG is based on a DAWG, which is based on a TRIE
 */
 
 class Gaddag{
     constructor (dict){
-        fs.readFile(dict, (err, data) => loadDictionary(err, data));
+        //fs.readFile(dict, (err, data) => loadDictionary(err, data));
+        readline(dict);
+    }
+    
+    readLine(dict){
+        const fileStream = fs.createReadStream(dict);
+
+        const rl = readline.createInterface({
+            input: fileStream,
+            crlfDelay: Infinity
+        });
+
+        for await (const line of rl) {
+            this.loadDictionary(line);
+        }
+
     }
      
-    loadDictionary(err, data){
+    loadDictionary(line){
         const words = {
             "A": [],
             "B": [],
@@ -60,10 +75,14 @@ class Gaddag{
             words[letter].push(readLine);
         }
 
+        mapWord(line);
+
     }
 
 
 
     
 }
+
+
 
