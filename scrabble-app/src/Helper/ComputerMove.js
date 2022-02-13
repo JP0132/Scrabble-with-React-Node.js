@@ -35,6 +35,4 @@ export function MakeMove() {
         console.log("DATA SENT", data);
         computerMove = data;
     })
-
-
 }
