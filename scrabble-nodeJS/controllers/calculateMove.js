@@ -6,12 +6,31 @@ exports.calculateMove = (req, res) => {
     console.log("Calculating Move");
     console.log(req.body.rack);
     let rack = req.body.rack;
-    let g = new Gaddag("../scrabble-nodeJS/CollinsScrabbleWords(2019).txt");
+    //let g = new Gaddag("../scrabble-nodeJS/CollinsScrabbleWords(2019).txt");
+
+    const searchGaddag =  async () => {
+        const result = await createGaddag();
+        setTimeout(function(){
+            console.log("finishedBuilding");
+            console.log(result.wordExist("ZZZS"));
+            res.json({
+                "hello":"chris"
+            })
+        }, 1000)
+        
+    }
+    
+    searchGaddag();
+   
 
     
-    res.json({
-        "hello":"chris"
-    })
+    
+}
+
+async function createGaddag(){
+    const g = new Gaddag("../scrabble-nodeJS/CollinsScrabbleWords(2019).txt");
+    return g;
+   
 }
 
 
@@ -55,10 +74,10 @@ class Gaddag{
     }
 
     insert(word){
-        console.log("inserting", word);
+        //console.log("inserting", word);
         var node = this.root;
         for(let i = 0; i < word.length; i++){
-            if(node.children[word[i]] === null){
+            if(!node.children[word[i]]){
                 node.children[word[i]] = new Node(word[i]);
 
                 node.children[word[i]].parent = node;
@@ -71,6 +90,20 @@ class Gaddag{
             }
             
         }
+    }
+
+    wordExist(word){
+        let node = this.root;
+        for(let i = 0; i < word.length; i++){
+            if(node.children[word[i]]){
+                node = node.children[word[i]];
+            }
+            else{
+                return false;
+            }
+
+        }
+        return node.end;
     }
     
     readLine(dict){
