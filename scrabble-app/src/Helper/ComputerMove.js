@@ -3,7 +3,7 @@ import GameData from "../JSONData/GameData.json";
 import axios from "axios";
 
 
-export function MakeMove() {
+export async function MakeMove() {
     var newTiles;
     var compRack = GameData.computerRack;
     var computerMove;
@@ -20,19 +20,35 @@ export function MakeMove() {
     var data = {
         "rack" : compRack
     }
-    fetch('http://localhost:3001/api/computerMove/',{
+
+    const response = await fetch('http://localhost:3001/api/computerMove/',{
         method: "post",
         headers: {
             'Content-Type': "application/json"
         },
         body: JSON.stringify(data),
+
+    })
+
+    const d = await response.json();
+    return d;
+
+
+
+    // fetch('http://localhost:3001/api/computerMove/',{
+    //     method: "post",
+    //     headers: {
+    //         'Content-Type': "application/json"
+    //     },
+    //     body: JSON.stringify(data),
      
-    })
-    .then(res => {
-        return res.json();
-    })
-    .then(data => {
-        console.log("DATA SENT", data);
-        computerMove = data;
-    })
+    // })
+    // .then(res => {
+    //     return res.json();
+    // })
+    // .then(data => {
+    //     console.log("DATA SENT", data);
+    //     computerMove = data;
+    //     return computerMove;
+    // })
 }

@@ -11,9 +11,14 @@ const Game = (props) => {
     const [isComputerTurn, setComputerTurn] = useState(false);
     const handlePlayWord = () => {
         GameData.turnPlayer = "computer";
-        console.log(GameData.turnPlayer);
+        //console.log(GameData.turnPlayer);
         setComputerTurn(true);
-        let computerMove = MakeMove();
+
+        MakeMove().then(d => {
+            console.log("Data here", d);
+            setComputerTurn(false);
+        })
+     
     }
     return(
         <div className='game'>
