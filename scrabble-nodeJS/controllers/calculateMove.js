@@ -128,12 +128,12 @@ class Gaddag{
             }
             else{
                 //line.split('').map(mapWord(line));
-                g(line);
+                insertingIntoGaddag(line);
             }
         
         });
 
-        const g = (line) => {
+        const insertingIntoGaddag = (line) => {
             this.insert(line);
 
         }
