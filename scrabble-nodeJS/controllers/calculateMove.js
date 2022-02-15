@@ -53,10 +53,29 @@ class Gaddag{
         this.readLine(dict);
         
     }
+
+    insert(word){
+        console.log("inserting", word);
+        var node = this.root;
+        for(let i = 0; i < word.length; i++){
+            if(node.children[word[i]] === null){
+                node.children[word[i]] = new Node(word[i]);
+
+                node.children[word[i]].parent = node;
+
+            }
+            node = node.children[word[i]];
+            //Checking if reached the end of the word
+            if(i === word.length-1){
+                node.end = true;
+            }
+            
+        }
+    }
     
     readLine(dict){
         console.log("hi");
-        var lineReader = require('readline').createInterface({
+        this.lineReader = require('readline').createInterface({
             input: require('fs').createReadStream(dict)
         });
         const words = {
@@ -88,8 +107,8 @@ class Gaddag{
             Z: []
         };
           
-        lineReader.on('line', function (line) {
-           
+        this.lineReader.on('line', function (line) {
+            
             const mapWord = (line) => {
                 return (letter, index, arr) =>
                   words[letter].push(
@@ -103,14 +122,21 @@ class Gaddag{
             
             if(line === "FINALLINE"){
                 //console.log("A word", words["A"]);
-                console.log("word", words);
+                //console.log("word", words);
+                console.log("words have been entered");
     
             }
             else{
-                line.split('').map(mapWord(line));
+                //line.split('').map(mapWord(line));
+                g(line);
             }
         
         });
+
+        const g = (line) => {
+            this.insert(line);
+
+        }
 
 
         
