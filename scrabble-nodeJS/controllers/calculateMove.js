@@ -18,10 +18,15 @@ exports.calculateMove = (req, res) => {
             console.log(result.find("IGN"));
             console.log(result.wordExist("HEL"));
             console.log(result.wordExist("HELL"));
+            searchBoard().then(d =>{
+                res.json({
+                    "letters": d,
+                    "hello":"chris"
+                })
+            });
+
             
-            res.json({
-                "hello":"chris"
-            })
+          
         }, 2000) 
     }
     
@@ -30,12 +35,87 @@ exports.calculateMove = (req, res) => {
 }
 
 
-
 async function createGaddag(){
     const g = new Gaddag("../scrabble-nodeJS/CollinsScrabbleWords(2019).txt");
     return g;
 
 }
+
+async function searchBoard(board, gaddag, rack){
+    //Search Each Row
+    const rowMoves = await searchAllRows(board, gaddag, rack);
+    return rowMoves;
+     
+}
+
+async function searchAllRows(board, gaddag, rack){
+    //Search Each Row
+    var validWords = [];
+    for(let row = 0; row < board.length; row++){
+        let currentRow = board[row];
+        //Check if row is empty or not
+        var flag = 1;
+        let blankSq = "*";
+        var squarePosition = 0;
+        for(let i = 0; i < currentRow.length; i++){
+            if(currentRow[i] ===! blankSq){
+                squarePosition = i;
+                flag = 0;
+                break;
+            }
+        }
+        //If row is not empty
+        if(flag === 0){
+            //Checking this row
+            //Adding letter found on the row to list
+            let currentLetterRow = "";
+            let wordFound = false;
+            for(let x = squarePosition; x < currentRow.length; x++){
+                if(wordFound){
+                    break;
+                }
+                let currentSquare = currentRow[x];
+                if(currentSquare ===! "*"){
+                    currentLetterRow += currentSquare;
+                    // for(let j = x+1; j < currentRow.length; j++){
+                    //     if(currentRow[j] ===! "*"){
+                    //         currentLetterRow += currentRow[j];
+                    //     }
+               
+                           
+
+                }
+                else{
+                    let checkWord = currentLetterRow;
+                    for(let r = 0; r < rack.length; r++){
+                        //Check the letter to the rack if match found continue
+                        //searching the row
+                        let test = checkWord;
+                        let rackLetter = rack[r];
+                        test += rackLetter;
+                        if(gaddag.find(test)){
+                            checkWord = test;
+                            if(gaddag.wordExist(checkWord)){
+                                validWords.push(checkWord);
+                                wordFound = true;
+                                break;
+                            }
+                            currentLetterRow = checkWord;
+                            break;
+                            
+                        }
+
+                    }   
+                }
+                
+            }
+         
+        }
+    
+    }
+    return validWords;
+}
+
 
 
 
