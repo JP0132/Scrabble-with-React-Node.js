@@ -2,10 +2,10 @@ import {DrawTiles} from "../Components/Rack/RackHelper";
 import GameData from "../JSONData/GameData.json";
 
 
-
 export async function MakeMove() {
     var newTiles;
     var compRack = GameData.computerRack;
+    var currentBoard = GameData.currentBoard;
 
     if(compRack < 7){
         let noOfTilesNeeded = 7 - compRack.length;
@@ -18,6 +18,7 @@ export async function MakeMove() {
 
     var data = {
         "rack" : compRack,
+        "board" :currentBoard
     }
 
     const response = await fetch('http://localhost:3001/api/computerMove/',{

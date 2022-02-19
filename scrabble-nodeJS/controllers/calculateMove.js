@@ -7,6 +7,7 @@ exports.calculateMove = (req, res) => {
     console.log("Calculating Move");
     console.log(req.body.rack);
     let rack = req.body.rack;
+    let board = req.body.board;
 
     const searchGaddag =  async () => {
         const result = await createGaddag();
@@ -128,6 +129,7 @@ class Gaddag{
     //Checks if a word exists in the "trie"
     wordExist(word){
         let node = this.root;
+        //Loops through the node cnildren each time
         for(let i = 0; i < word.length; i++){
             let letter = word[i]
             if(node.children[letter]){
