@@ -7,8 +7,6 @@ exports.calculateMove = (req, res) => {
     console.log("Calculating Move");
     console.log(req.body.rack);
     let rack = req.body.rack;
-    let board = req.body.board;
-    //let g = new Gaddag("../scrabble-nodeJS/CollinsScrabbleWords(2019).txt");
 
     const searchGaddag =  async () => {
         const result = await createGaddag();
@@ -16,8 +14,9 @@ exports.calculateMove = (req, res) => {
         setTimeout(function(){
             console.log("finishedBuilding");
             console.log(result.find("HE"));
-            console.log(result.contain("HEL"));
-            console.log(result.contain("ELL"));
+            console.log(result.find("IGN"));
+            console.log(result.wordExist("HEL"));
+            console.log(result.wordExist("HELL"));
             
             res.json({
                 "hello":"chris"
@@ -52,6 +51,8 @@ const Node =  function (key = null) {
     this.parent = null;
     this.children = {};
     this.end = false;
+
+    //Used to get all the words from a node sub tree
     this.getWord = function(){
         let output = [];
         let node = this;
@@ -69,12 +70,14 @@ class Gaddag{
     constructor (dict){
         //fs.readFile(dict, (err, data) => this.loadDictionary(err, data));
         this.root = new Node();
+
         //Vars to be used for gaddag implementation
         this.previousWord = '';
         this.uncheckedNodes = [];
         this.nextId = 1;
         this.minimizedNodes = {};
 
+        //Read the dictionary text file into the data structure
         this.readLine(dict);
         
     }
