@@ -1,12 +1,11 @@
 import {DrawTiles} from "../Components/Rack/RackHelper";
 import GameData from "../JSONData/GameData.json";
-import axios from "axios";
+
 
 
 export async function MakeMove() {
     var newTiles;
     var compRack = GameData.computerRack;
-    var computerMove;
 
     if(compRack < 7){
         let noOfTilesNeeded = 7 - compRack.length;
@@ -18,7 +17,7 @@ export async function MakeMove() {
     console.log(compRack);
 
     var data = {
-        "rack" : compRack
+        "rack" : compRack,
     }
 
     const response = await fetch('http://localhost:3001/api/computerMove/',{
@@ -52,3 +51,4 @@ export async function MakeMove() {
     //     return computerMove;
     // })
 }
+

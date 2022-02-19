@@ -7,16 +7,17 @@ import { useEffect, useState } from 'react';
 import {MakeMove} from '../Helper/ComputerMove';
 
 
-const Game = (props) => {
+const Game = () => {
     const [isComputerTurn, setComputerTurn] = useState(false);
     const handlePlayWord = () => {
         GameData.turnPlayer = "computer";
-        //console.log(GameData.turnPlayer);
         setComputerTurn(true);
 
         MakeMove().then(d => {
             console.log("Data here", d);
             setComputerTurn(false);
+            GameData.turnNumber +=1;
+            GameData.turnPlayer = "user";
         })
      
     }
