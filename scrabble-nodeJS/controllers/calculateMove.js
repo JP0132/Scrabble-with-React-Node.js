@@ -172,6 +172,34 @@ class Gaddag{
         
     }
 
+    str(node){
+        //checks if the end of the the node or not
+        let s = node.$ ? "1" : "0";
+        //Get all the object keys of the nodes
+        let keys = Object.keys(node.edges);
+        for(let i = 0; i < keys.length; i++){
+            s+= "_" + node.edges[keys[i]] + "_" + node.edges[keys[i]].id;
+        }
+        return s;
+    }
+
+    minimizationNodes(nodeNum){
+        //Going through the uncheckedNodes
+        for(let i = this.uncheckedNodes.length-1; i > nodeNum - 1; ){
+            //Getting set of uncheckedNodes
+            let tuple = this.uncheckedNodes.pop();
+            let childKey = this.str(tuple.child);
+            let node = this.minimizedNodes[childKey];
+
+            if(node){
+                tuple.parent.edges[tuple.letter] = node;
+            }
+            else{
+                this.minimizedNodes[childKey] = tuple.child;
+            }
+        }
+    }
+
 
     insert(word){
         //console.log("inserting", word);
@@ -188,6 +216,9 @@ class Gaddag{
             }
             commonPrefix +=1;
         }
+        
+        //mimise the nodes
+        minimizationNodes(commonPrefix);
 
         //If a new node "tree" for a new letter is needed
         var node = this.root;
@@ -227,7 +258,6 @@ class Gaddag{
     //Finds if a prefix of a word exists or not
     find(prefix){
         let node = this.root;
-
         for(let i = 0; i < prefix.length; i++){
             if(node.children[prefix[i]]){
                 node = node.children[prefix[i]];
@@ -236,8 +266,6 @@ class Gaddag{
                 return false;
             }
         }
-
-
         return true;
     }
 
