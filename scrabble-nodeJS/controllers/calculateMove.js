@@ -15,15 +15,19 @@ exports.calculateMove = (req, res) => {
 
         setTimeout(function(){
             console.log("finishedBuilding");
-            console.log(result.find("HE"));
-            console.log(result.find("IGN"));
-            console.log(result.wordExist("HEL"));
-            console.log(result.wordExist("HELL"));
-            searchBoard(board, result, rack).then(d =>{
-                res.json({
-                    "letters": d,
-                    "hello":"chris"
-                })
+            // console.log(result.find("HE"));
+            // console.log(result.find("IGN"));
+            // console.log(result.wordExist("HEL"));
+            // console.log(result.wordExist("HELL"));
+            // searchBoard(board, result, rack).then(d =>{
+            //     res.json({
+            //         "letters": d,
+            //         "hello":"chris"
+            //     })
+            // });
+            res.json({
+                
+                "hello":"chris"
             });
 
             
@@ -128,6 +132,7 @@ Each word inserted n times => n representing the length of the word
 Each insertion has a special symbol
 Prefix is reversed
 GADDAG is based on a DAWG, which is based on a TRIE
+*Using npm gaddag implementation with changes
 */
 
 const Node =  function (key = null) {
@@ -135,17 +140,17 @@ const Node =  function (key = null) {
     this.parent = null;
     this.children = {};
     this.end = false;
+}
 
-    //Used to get all the words from a node sub tree
-    this.getWord = function(){
-        let output = [];
-        let node = this;
 
-        while (node !== null) {
-            output.unshift(node.key);
-            node = node.parent;
-        }
+
+class GaddagNode{
+    constructor(id = 0){
+        this.id = id;
+        this.edges = {};
+        this.$ = 0;
     }
+
 }
 
 
@@ -156,6 +161,7 @@ class Gaddag{
         this.root = new Node();
 
         //Vars to be used for gaddag implementation
+        //Previous word entered into the gaddag
         this.previousWord = '';
         this.uncheckedNodes = [];
         this.nextId = 1;
@@ -169,21 +175,53 @@ class Gaddag{
 
     insert(word){
         //console.log("inserting", word);
-        var node = this.root;
-        for(let i = 0; i < word.length; i++){
-            if(!node.children[word[i]]){
-                node.children[word[i]] = new Node(word[i]);
+        let commonPrefix = 0;
 
-                node.children[word[i]].parent = node;
+        //Selecting the smallest word length so no out of bounds error occurs
+        var minWordLength = Math.min(word.length, this.previousWord.length);
 
+        //Find where in the word the common prefix is up till in the new word
+        //Usec to minimise the nodes and where to insert the node
+        for(let i = 0; i < minWordLength; i++){
+            if(word[i] !== this.previousWord[i]){
+                break
             }
-            node = node.children[word[i]];
-            //Checking if reached the end of the word
-            if(i === word.length-1){
-                node.end = true;
-            }
-        
+            commonPrefix +=1;
         }
+
+        //If a new node "tree" for a new letter is needed
+        var node = this.root;
+        //If nodes that have not been minimised still exist then
+        //get the child node of the unchecknodes
+        if(this.uncheckedNodes.length !== 0){
+            node = this.uncheckedNodes[this.uncheckedNodes.length-1].child;
+        }
+
+        //Adding the part of the word that is not a common prefix
+        var slicedWord = word.slice(commonPrefix);
+        for(let i = 0; i < slicedWord.length; i++){
+            //creates a new node, has a new id
+            //increments the id
+            var currentNode = new GaddagNode(this.nextId);
+            this.nextId += 1;
+            //gets the value for the node
+            let currentLetter = slicedWord[i];
+            //adds the current node to the nodes
+            node.edges[letter] = currentNode;
+            //adds to unchecked for minimisation
+            this.uncheckedNodes.push({
+                parentNode: node,
+                letter: currentLetter,
+                childNode: currentNode
+            })
+            
+            node = currentNode;
+        }
+        //end of the word has been reached
+        //special indicator is equal to one for the node
+        node.$ = 1;
+        this.previousWord = word;
+
     }
 
     //Finds if a prefix of a word exists or not
@@ -284,12 +322,22 @@ class Gaddag{
                 //Code for inserting each object array
                 //into the gaddag will go here
 
+                //Getting the word object keys
+                //Keys = A, B, C...
+                var wordKeys = Object.keys(words);
+                for(let i = 0; i < wordKeys[i]; i++){
+                    const keyWordList = words[wordKeys[i]].sort();
+                    for(let j = 0; j < keyWordList.length; j++){
+                        insertingIntoGaddag(keyWordList[j]);
+                    }
+                }
+
 
             }
             else{
 
-                //line.split('').map(mapWord(line));
-                insertingIntoGaddag(line);
+                line.split('').map(mapWord(line));
+                //insertingIntoGaddag(line);
             }
         
         });
