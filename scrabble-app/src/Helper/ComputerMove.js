@@ -5,7 +5,7 @@ import GameData from "../JSONData/GameData.json";
 export async function MakeMove() {
     var newTiles;
     var compRack = GameData.computerRack;
-    var currentBoard = GameData.currentBoard;
+    var b = GameData.currentBoard;
 
     if(compRack < 7){
         let noOfTilesNeeded = 7 - compRack.length;
@@ -14,12 +14,15 @@ export async function MakeMove() {
         GameData.computerRack = newRack;
         compRack = newRack;
     }
+    console.log(b);
     console.log(compRack);
 
     var data = {
         "rack" : compRack,
-        "board" :currentBoard
+        "board" : b
     }
+
+    //console.log(data);
 
     const response = await fetch('http://localhost:3001/api/computerMove/',{
         method: "post",
