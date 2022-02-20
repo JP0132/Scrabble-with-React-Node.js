@@ -6,6 +6,7 @@ const readline = require('readline');
 exports.calculateMove = (req, res) => {
     console.log("Calculating Move");
     console.log(req.body.rack);
+    console.log(req.body.board);
     let rack = req.body.rack;
     let board = req.body.board;
 
@@ -18,7 +19,7 @@ exports.calculateMove = (req, res) => {
             console.log(result.find("IGN"));
             console.log(result.wordExist("HEL"));
             console.log(result.wordExist("HELL"));
-            searchBoard().then(d =>{
+            searchBoard(board, result, rack).then(d =>{
                 res.json({
                     "letters": d,
                     "hello":"chris"
@@ -53,12 +54,13 @@ async function searchAllRows(board, gaddag, rack){
     var validWords = [];
     for(let row = 0; row < board.length; row++){
         let currentRow = board[row];
+        //console.log(row, currentRow);
         //Check if row is empty or not
         var flag = 1;
         let blankSq = "*";
         var squarePosition = 0;
         for(let i = 0; i < currentRow.length; i++){
-            if(currentRow[i] ===! blankSq){
+            if(currentRow[i] !== blankSq){
                 squarePosition = i;
                 flag = 0;
                 break;
@@ -68,6 +70,7 @@ async function searchAllRows(board, gaddag, rack){
         if(flag === 0){
             //Checking this row
             //Adding letter found on the row to list
+            console.log("current", currentRow);
             let currentLetterRow = "";
             let wordFound = false;
             for(let x = squarePosition; x < currentRow.length; x++){
@@ -75,15 +78,14 @@ async function searchAllRows(board, gaddag, rack){
                     break;
                 }
                 let currentSquare = currentRow[x];
-                if(currentSquare ===! "*"){
+                console.log(currentSquare);
+                if(currentSquare !== "*"){
                     currentLetterRow += currentSquare;
                     // for(let j = x+1; j < currentRow.length; j++){
                     //     if(currentRow[j] ===! "*"){
                     //         currentLetterRow += currentRow[j];
                     //     }
                
-                           
-
                 }
                 else{
                     let checkWord = currentLetterRow;
@@ -93,6 +95,7 @@ async function searchAllRows(board, gaddag, rack){
                         let test = checkWord;
                         let rackLetter = rack[r];
                         test += rackLetter;
+                        console.log(test);
                         if(gaddag.find(test)){
                             checkWord = test;
                             if(gaddag.wordExist(checkWord)){
