@@ -46,8 +46,9 @@ async function createGaddag(){
 async function searchBoard(board, gaddag, rack){
     //Search Each Row
     let rowMoves = await searchAllRows(board, gaddag, rack);
+    let columnMoves = await searchAllColumns(board, gaddag, rack);
 
-    return rowMoves; 
+    return rowMoves.concat(columnMoves); 
 }
 
 
@@ -119,7 +120,11 @@ async function searchAllRows(board, gaddag, rack){
                     
                 
                     currentLetterRow += currentSquare;
-                 
+                    // for(let j = x+1; j < currentRow.length; j++){
+                    //     if(currentRow[j] ===! "*"){
+                    //         currentLetterRow += currentRow[j];
+                    //     }
+               
                 }
                 else{
                     if(currentLetterRow !== ""){
@@ -146,6 +151,8 @@ async function searchAllRows(board, gaddag, rack){
 
         
 
+           // let foundWords = await tryLetters(lettersOnRow, rack, gaddag);
+           // validWords.push(foundWords);
            validWords.push(lettersOnRow);
            
 
@@ -156,6 +163,109 @@ async function searchAllRows(board, gaddag, rack){
     return validWords;
 }
 
+async function searchAllColumns(board, gaddag, rack){
+    var validWords = [];
+    const getColumn = (arr, n) => arr.map(x => x[n]);
+    for(let column = 0; column < board.length; column++){
+        let currentColumn = getColumn(board, column);
+       
+        for(let y = 0; y < currentColumn.length; y++){
+            var flag = 1;
+            let blankSq = "*";
+            var squarePosition = 0;
+            if(currentColumn[y] != "*"){
+                flag = 0;
+                squarePosition = y
+                break;
+            }
+           
+           
+        }
+
+        if(flag === 0){
+            
+            let currentLetterRow = "";
+            var freeSpacesLeft = 0;
+            var freeSpacesRight = 0;
+            var startposition = 0;
+            var endposition = 0;
+            var sep = 0;
+
+
+            var lettersOnRow = [];
+        
+            for(let x = 0; x < currentColumn.length; x++){
+                //console.log("y", x);
+                
+                let currentSquare = currentColumn[x];
+                
+                //console.log(lettersOnRow);
+               
+                if(currentSquare !== "*"){
+                    if(freeSpacesRight !== 0){
+                        let lset = [];
+                        endposition = x-freeSpacesRight;
+                        sep +=1;
+                
+                       
+                        rightFreePos = x-1;
+                        
+                        lset.push(freeSpacesLeft, freeSpacesRight, currentLetterRow, startposition, endposition, column);
+                        lettersOnRow.push(lset);
+                        if(sep > 0){
+                            freeSpacesLeft = freeSpacesRight;
+                            freeSpacesRight = 0;
+                        }
+                        else{
+                            currentLetterRow = "";
+                            freeSpacesLeft = 0;
+                            freeSpacesRight = 0;
+                        }
+                    }
+                    if(currentLetterRow == ""){
+                        startposition = x;
+                    }
+                    currentLetterRow += currentSquare;
+                    // for(let j = x+1; j < currentRow.length; j++){
+                    //     if(currentRow[j] ===! "*"){
+                    //         currentLetterRow += currentRow[j];
+                    //     }
+               
+                }
+                else{
+                    if(currentLetterRow !== ""){
+                        freeSpacesRight = freeSpacesRight + 1;
+
+                    }
+                    else{
+                        freeSpacesLeft = freeSpacesLeft + 1;
+
+                    }
+                    
+                }
+
+                if(x === 14 && freeSpacesRight !== 0){
+                    let lset = [];
+                    endposition = x-freeSpacesRight;
+                    lset.push(freeSpacesLeft, freeSpacesRight, currentLetterRow, startposition, endposition, column);
+                    lettersOnRow.push(lset);
+                    console.log("current", lettersOnRow);
+                }
+                
+            }
+
+            //let foundWords = await tryLetters(lettersOnRow, rack, gaddag);
+                //validateWords(words);
+            //validWords.push(foundWords);
+            validWords.push(lettersOnRow);
+          
+
+
+        }
+            
+    }
+    return validWords;
+}
 
 
 
