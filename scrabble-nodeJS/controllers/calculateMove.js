@@ -48,9 +48,26 @@ async function searchBoard(board, gaddag, rack){
     let rowMoves = await searchAllRows(board, gaddag, rack);
     let columnMoves = await searchAllColumns(board, gaddag, rack);
 
-    return rowMoves.concat(columnMoves); 
+    let rowWords = [];
+    let columnWords = [];
+
+    for(let i = 0; i < rowMoves.length; i++){
+        let rowW = await tryLetters(rowMoves[i], rack, gaddag);
+        rowWords.push(rowW);
+    }
+
+    for(let j = 0; j < columnMoves.length; j++){
+        let colW = await tryLetters(columnMoves[j], rack, gaddag);
+        columnWords.push(colW);
+    }
+
+    
+    return rowWords.concat(columnWords); 
 }
 
+function longestWord(arr){
+    return arr.reduce((a,b) => a.length < b.length ? b : a, "");
+}
 
 async function searchAllRows(board, gaddag, rack){
     //Search Each Row
@@ -265,6 +282,117 @@ async function searchAllColumns(board, gaddag, rack){
             
     }
     return validWords;
+}
+
+
+
+async function tryLetters(currentLetters, rack, gaddag){
+    let tryWords = [];
+    rightWords = [];
+    leftWords = [];
+    
+    let r = await fillRight(rack, currentLetters[0][2], gaddag, null, currentLetters[0][1],[], currentLetters[0][4]);
+    rightWords = [];
+    let l = await fillLeft(rack, currentLetters[0][2], gaddag, null, currentLetters[0][0],[], currentLetters[0][3]);
+    leftWords = []
+
+    // for(let i = 0; i < currentLetters.length; i++){
+    //     let tryL = currentLetters[i][2];
+    //     let l = await fillRight(rack, currentLetters[0][2], gaddag, null);
+    //     let fitWords = l.filter(word => word.length < currentLetters[i][1]-1)
+    // }
+
+    
+    
+    console.log("left",l);
+    console.log("right",r);
+    return {
+        left: l,
+        right: r
+    } ;
+
+    
+}
+
+
+
+
+var rightWords = [];
+var leftWords = [];
+
+
+
+async function fillRight(rack, test, gaddag, pos, freeSpacesRight, letterUsed = [], endpos){
+    for(let i = 0; i < rack.length; i++){
+        if(pos === i){
+            //console.log("yo");
+            continue;
+        }
+        let l = rack[i];
+        let testWord =  test + l;
+        //console.log(testWord);
+        if(gaddag.wordExist(testWord) == "Y"){
+            //letterUsed += l;
+            //letterUsed.push(i);
+            
+            //console.log("letter ", letterUsed, " ", "word ", testWord);
+            rightWords.push(testWord);
+            //letterUsed = "";
+            fillRight(rack, testWord, gaddag, i, freeSpacesRight);
+        }
+        else if(gaddag.wordExist(testWord) == "N"){
+            if(testWord.length >= freeSpacesRight){
+                break;
+            }
+            
+            
+            //console.log("letter2 ", letterUsed, " ", "word2 ", testWord);
+            fillRight(rack, testWord, gaddag, i, freeSpacesRight);
+        }
+        
+        
+    }
+
+    return rightWords;
+
+}
+
+async function fillLeft(rack, test, gaddag, pos, freeSpacesLeft,letterUsed, startpos){
+    //let tempRack = rack;
+    
+    for(let i = 0; i < rack.length; i++){
+        if(pos === i){
+            continue;
+        }
+        let l = rack[i];
+        let testWord =  l + test;
+        //console.log(testWord);
+        if(gaddag.wordExist(testWord) == "Y"){
+            leftWords.push(testWord);
+            // let index = tempRack.indexOf(l);
+            // if(index > -1){
+            //     tempRack.splice(index, 1);
+
+            // }
+            
+            //console.log(letterUsed, testWord);
+            
+            fillLeft(rack, testWord, gaddag, i, freeSpacesLeft);
+        }
+        else if(gaddag.wordExist(testWord) == "N"){
+            if(testWord.length >= freeSpacesLeft){
+                break;
+            }
+            // let index = tempRack.indexOf(l);
+            // tempRack.splice(index, 1);
+            
+            fillLeft(rack, testWord, gaddag, i, freeSpacesLeft);
+        }
+        
+    }
+
+    return leftWords;
+
 }
 
 
