@@ -5,8 +5,8 @@ const readline = require('readline');
 
 exports.calculateMove = (req, res) => {
     console.log("Calculating Move");
-    console.log(req.body.rack);
-    console.log(req.body.board);
+    //console.log(req.body.rack);
+    //console.log(req.body.board);
     let rack = req.body.rack;
     let board = req.body.board;
 
@@ -15,20 +15,21 @@ exports.calculateMove = (req, res) => {
 
         setTimeout(function(){
             console.log("finishedBuilding");
-            console.log(result.find("HE"));
-            console.log(result.find("IGN"));
-            console.log(result.wordExist("HEL"));
-            console.log(result.wordExist("HELL"));
-            // searchBoard(board, result, rack).then(d =>{
-            //     res.json({
-            //         "letters": d,
-            //         "hello":"chris"
-            //     })
-            // });
-            res.json({
-                "hello":"chris"
+            //console.log(result.find("HE"));
+            //console.log(result.find("OUT"));
+            //console.log(result.wordExist("HEL"));
+            console.log(result.wordExist("OUTS"));
+            console.log(result.wordExist("OUTR"));
+            searchBoard(board, result, rack).then(d =>{
+                res.json({
+                    "letters": d,
+                    "hello":"chris"
+                })
             });
-        }, 10000) 
+            // res.json({
+            //     "hello":"chris"
+            // });
+        }, 5000) 
     }
     
     searchGaddag();
@@ -44,10 +45,11 @@ async function createGaddag(){
 
 async function searchBoard(board, gaddag, rack){
     //Search Each Row
-    const rowMoves = await searchAllRows(board, gaddag, rack);
-    return rowMoves;
-     
+    let rowMoves = await searchAllRows(board, gaddag, rack);
+
+    return rowMoves; 
 }
+
 
 async function searchAllRows(board, gaddag, rack){
     //Search Each Row
@@ -70,49 +72,84 @@ async function searchAllRows(board, gaddag, rack){
         if(flag === 0){
             //Checking this row
             //Adding letter found on the row to list
-            console.log("current", currentRow);
+            
             let currentLetterRow = "";
-            let wordFound = false;
-            for(let x = squarePosition; x < currentRow.length; x++){
-                if(wordFound){
-                    break;
-                }
+            var freeSpacesLeft = 0;
+            var freeSpacesRight = 0;
+         
+            let startposition = 0;
+            let endposition = 0;
+            let sep = 0;
+
+            var lettersOnRow = [];
+        
+            for(let x = 0; x < currentRow.length; x++){
+                //console.log("x", x);
+                
                 let currentSquare = currentRow[x];
-                console.log(currentSquare);
-                if(currentSquare !== "*"){
-                    currentLetterRow += currentSquare;
-                    // for(let j = x+1; j < currentRow.length; j++){
-                    //     if(currentRow[j] ===! "*"){
-                    //         currentLetterRow += currentRow[j];
-                    //     }
+                
+                //console.log(lettersOnRow);
                
+                if(currentSquare !== "*"){
+                  
+                    if(freeSpacesRight !== 0){
+                        let lset = [];
+                        endposition = x-freeSpacesRight;
+                        sep +=1;
+                
+                       
+                        rightFreePos = x-1;
+                        
+                        lset.push(freeSpacesLeft, freeSpacesRight, currentLetterRow, startposition, endposition, row);
+                        lettersOnRow.push(lset);
+                        if(sep > 0){
+                            freeSpacesLeft = freeSpacesRight;
+                            freeSpacesRight = 0;
+                        }
+                        else{
+                            currentLetterRow = "";
+                            freeSpacesLeft = 0;
+                            freeSpacesRight = 0;
+                        }
+                        
+                    }
+                    if(currentLetterRow == ""){
+                        startposition = x;
+                    }
+                    
+                
+                    currentLetterRow += currentSquare;
+                 
                 }
                 else{
-                    let checkWord = currentLetterRow;
-                    for(let r = 0; r < rack.length; r++){
-                        //Check the letter to the rack if match found continue
-                        //searching the row
-                        let test = checkWord;
-                        let rackLetter = rack[r];
-                        test += rackLetter;
-                        console.log(test);
-                        if(gaddag.find(test)){
-                            checkWord = test;
-                            if(gaddag.wordExist(checkWord)){
-                                validWords.push(checkWord);
-                                wordFound = true;
-                                break;
-                            }
-                            currentLetterRow = checkWord;
-                            break;
-                            
-                        }
+                    if(currentLetterRow !== ""){
+                        freeSpacesRight = freeSpacesRight + 1;
 
-                    }   
+                    }
+                    else{
+                        leftFreePos = x;
+                        freeSpacesLeft = freeSpacesLeft + 1;
+
+                    }
+                    
+                }
+
+                if(x === 14 && freeSpacesRight !== 0){
+                    let lset = [];
+                    endposition = x-freeSpacesRight;
+                    lset.push(freeSpacesLeft, freeSpacesRight, currentLetterRow, startposition, endposition, row);
+                    lettersOnRow.push(lset);
+                    //console.log("current", lettersOnRow);
                 }
                 
             }
-         
+
+        
+
+           validWords.push(lettersOnRow);
+           
+
+            
         }
     
     }
@@ -131,12 +168,6 @@ GADDAG is based on a DAWG, which is based on a TRIE
 *Using npm gaddag implementation with changes
 */
 
-// const Node =  function (key = null) {
-//     this.key = key;
-//     this.parent = null;
-//     this.children = {};
-//     this.end = false;
-// }
 
 
 
@@ -196,6 +227,8 @@ class Gaddag{
         }
     }
 
+   
+
 
     insert(word){
         //console.log("inserting", word);
@@ -225,15 +258,24 @@ class Gaddag{
             node = this.uncheckedNodes[this.uncheckedNodes.length-1].childNode;
         }
 
+
+
         //Adding the part of the word that is not a common prefix
         const slicedWord = word.slice(commonPrefix);
+        //console.log("slicedWord", slicedWord);
         for(let i = 0; i < slicedWord.length; i++){
             //creates a new node, has a new id
             //increments the id
+            var ltr = slicedWord[i];
+        
+
+            
             var currentNode = new GaddagNode(this.nextId);
             this.nextId += 1;
             //gets the value for the node
-            var ltr = slicedWord[i].toUpperCase();
+          
+            
+         
             //adds the current node to the nodes
             node.edges[ltr] = currentNode;
             //adds to unchecked for minimisation
@@ -265,6 +307,8 @@ class Gaddag{
         return 1;
     }
 
+
+
     //Check if the word is in the gaddag
     wordExist(word){
         var node = this.root;
@@ -276,7 +320,13 @@ class Gaddag{
             }
             node = node.edges[letter];
         }
-        return node.$;
+
+        if(node.$){
+            return "Y"
+            
+        }
+        return "N";
+        
     }
 
     finish(){
@@ -336,7 +386,20 @@ class Gaddag{
                     index === 0
                     ? line
                     : line.slice(index, line.length) + '_' + arr.slice(0, index).reverse().join(''));
-              };
+            };
+
+            const addToWords =  (line) => {
+                for(let i = 0; i < line.length; i++){
+                    let reverseWord = line.slice(0, i+1).split("").reverse().join('');
+                    let secondPart = line.slice(i+1);
+                    let wordToAdd = reverseWord +"$"+ secondPart;
+                    words[wordToAdd[0]].push(wordToAdd);
+                    
+                }
+            }
+
+            
+            
       
          
             
@@ -345,6 +408,8 @@ class Gaddag{
                 //console.log(words);
                 //Code for inserting each object array
                 //into the gaddag will go here
+
+                //console.log(words);
 
                 //Getting the word object keys
                 //Keys = A, B, C...
@@ -362,13 +427,16 @@ class Gaddag{
                 //console.log(line);
                 line.split('').map(mapWord(line));
                 //insertingIntoGaddag(line);
+                //addToWords(line);
             }
         
         });
 
         //Testing the insertion of words as a trie first
         const insertingIntoGaddag = (word) => {
+            //this.insert(word);
             this.insert(word);
+           
         }
 
         const finishBuilding = () => {
