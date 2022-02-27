@@ -45,24 +45,87 @@ async function createGaddag(){
 
 async function searchBoard(board, gaddag, rack){
     //Search Each Row
-    let rowMoves = await searchAllRows(board, gaddag, rack);
-    let columnMoves = await searchAllColumns(board, gaddag, rack);
+    let rowMoves2 = await searchAllRows(board, gaddag, rack);
+    let columnMoves2 = await searchAllColumns(board, gaddag, rack);
 
     let rowWords = [];
     let columnWords = [];
 
-    for(let i = 0; i < rowMoves.length; i++){
-        let rowW = await tryLetters(rowMoves[i], rack, gaddag);
+    for(let i = 0; i < rowMoves2.length; i++){
+        let rowW = await tryLetters(rowMoves2[i], rack, gaddag);
         rowWords.push(rowW);
     }
 
-    for(let j = 0; j < columnMoves.length; j++){
-        let colW = await tryLetters(columnMoves[j], rack, gaddag);
+    for(let j = 0; j < columnMoves2.length; j++){
+        let colW = await tryLetters(columnMoves2[j], rack, gaddag);
         columnWords.push(colW);
     }
 
+    let rowMoves = rowWords;
+    let columnMoves = columnWords;
+    let longestR = [];
+    let longestL = [];
+    let rowRight = [];
+    let rowLeft = [];
+
+    let colRight = [];
+    let colLeft = [];
+
+    for(let i = 0; i < rowMoves.length; i++){
+        rowRight.push(rowWords[i].right);
+        rowLeft.push(rowWords[i].left);
+    }
+
     
-    return rowWords.concat(columnWords); 
+    for(let i = 0; i < columnMoves.length; i++){
+        colRight.push(columnMoves[i].right);
+        colLeft.push(columnMoves[i].left);
+    }
+    rowRight = rowRight.flat();
+    rowLeft = rowLeft.flat();
+
+    colRight = colRight.flat();
+    colLeft = colLeft.flat();
+    
+    
+    if(rowLeft.length !== 0 && colLeft.length !== 0){
+        longestL.push(longestWord(rowLeft));
+        longestL.push(longestWord(colLeft));
+    }
+    else{
+        if(rowLeft.length !== 0){
+            longestL.push(longestWord(rowLeft));
+        }
+        else{
+            longestL.push(longestWord(colLeft));
+        }
+    }
+    if(rowRight.length !== 0 && colRight.length !== 0){
+        longestR.push(longestWord(rowRight));
+        longestR.push(longestWord(colRight));
+    }
+    else{
+        if(rowRight.length !== 0){
+            longestR.push(longestWord(rowRight));
+        }
+        else{
+            longestR.push(longestWord(colRight));
+        }
+    }
+
+    
+    let l = longestWord(longestL);
+    let r = longestWord(longestR);
+    let lon = longestWord([l,r]);
+
+    console.log("Row Moves", rowMoves);
+    console.log("Column Moves", columnMoves);
+    console.log("Column Moves", columnMoves2);
+    console.log("Column Left Moves", colLeft);
+    console.log("Longest Word", lon);
+
+
+    return rowMoves.concat(columnMoves); 
 }
 
 function longestWord(arr){
