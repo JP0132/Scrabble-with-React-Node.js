@@ -1,55 +1,46 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import '../../StyleSheets/Square.css';
 import { useDrop } from "react-dnd";
 import Tile from "../Tile/Tile";
 import GameData from '../../JSONData/GameData.json';
-
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { updatePlayerRack } from "../../features/rack";
+import { bindActionCreators } from "redux";
+import { actioncreators } from "../../state/action-creator/allActionsCreators";
+import { memo } from "react";
+import { v4 as uuidv4 } from 'uuid';
+import { removeFromPlayerRack } from "../../features/rackSlice";
+
 
 const Square = (props) => {
+    
     const [letter, setLetter] = useState('');
     const [squareType, setSquareType] = useState('B');
 
     const dispatch = useDispatch();
 
+    const { addLetterToPlayerRack, removeLetterOnPlayerRack } = bindActionCreators(actioncreators, dispatch);
+
     const [{isOver}, drop] = useDrop(() => ({
         accept:"tile",
-        drop: (item) => addToSquare(item.letterValue),
+        drop: (item) => addToSquare(item.letterValue, item.id, item.index),
         collect: (monitor) => ({
             isOver: !!monitor.isOver()
         })
     }))
 
-    const addToSquare = (l) => {
-        setLetter(<Tile key={Math.random()} letter = {l}/>);
-        let array = [...GameData.playerRack];
-        const index = array.indexOf(l);
-        array.splice(index, 1);
-        console.log("Letter value to be droped", l);
+    const addToSquare = (l, id, index) => {
+        let newId = uuidv4();
+        console.log(index);
+        dispatch(removeFromPlayerRack(index));
+        setLetter(<Tile key={newId} letter={l} id={newId}/>);
+        console.log(l, id);
        
-      
+        //removeLetterOnPlayerRack(id);
         
-        //const index = a.indexOf(l);
-        console.log("Current array",array);
-        GameData.playerRack = array;
-        //a.splice(index, 1);
-        //console.log(a);
-        dispatch(
-            updatePlayerRack(
-                {
-                    computerRack: [],
-                    playerRack: array
-                }
-            )
-        );
-
-        //GameData.playerRack = currentRack;
-        //console.log(squareType);
-       // console.log(props.coords);
-
     }
+
+    
 
 
     useEffect(() => {
@@ -77,4 +68,4 @@ const Square = (props) => {
 
 }
 
-export default Square;
+export default memo(Square);
