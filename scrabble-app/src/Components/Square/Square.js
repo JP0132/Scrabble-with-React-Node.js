@@ -12,60 +12,34 @@ import { v4 as uuidv4 } from 'uuid';
 import { removeFromPlayerRack } from "../../features/rackSlice";
 
 
-const Square = (props) => {
+const Square = ({x, y, sqType, children}) => {
     
-    const [letter, setLetter] = useState('');
-    const [squareType, setSquareType] = useState('B');
-
-    const dispatch = useDispatch();
-
-    const { addLetterToPlayerRack, removeLetterOnPlayerRack } = bindActionCreators(actioncreators, dispatch);
-
-    const [{isOver}, drop] = useDrop(() => ({
-        accept:"tile",
-        drop: (item) => addToSquare(item.letterValue, item.id, item.index),
-        collect: (monitor) => ({
-            isOver: !!monitor.isOver()
-        })
-    }))
-
-    const addToSquare = (l, id, index) => {
-        let newId = uuidv4();
-        console.log(index);
-        dispatch(removeFromPlayerRack(index));
-        setLetter(<Tile key={newId} letter={l} id={newId}/>);
-        console.log(l, id);
-       
-        //removeLetterOnPlayerRack(id);
-        
-    }
+    //const [letter, setLetter] = useState('');
+    const [squareType, setSquareType] = useState('');
 
     
-
-
     useEffect(() => {
-        setSquareType(props.squareType)
-    }, [props.squareType]);
+        setSquareType(sqType)
+    }, [sqType]);
 
     var bonus;
-    if(squareType === "B"){
+    if(sqType === "B"){
         bonus = "";
     }
-    else if(squareType === "C"){
+    else if(sqType === "C"){
         bonus = "DW";
-
     }
     else{
-        bonus = squareType;
+        bonus = sqType;
     }
     return(
         <div>
-            <div ref={drop} id={props.coords} className={`square ${squareType}`} style={{zIndex: isOver ? 1 : 0}}>
-                {letter || bonus}
+            <div className={`square ${sqType}`}>
+                {children|| bonus }
             </div>
         </div>
     )
 
 }
 
-export default memo(Square);
+export default Square;

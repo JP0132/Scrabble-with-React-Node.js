@@ -1,8 +1,32 @@
 import '../../StyleSheets/Board.css';
 import Square from '../Square/Square'
 import { useState, useEffect } from "react";
+import Tile from '../Tile/Tile';
+import BoardSquare from '../Square/BoardSquare';
+import { useDispatch, useSelector } from 'react-redux';
 
-const Board = () => {
+function renderSquare(squareNum, y, x, type, tilePositions){
+
+    let c = renderTile(x, y, tilePositions);
+    return(
+        <div key={squareNum}>
+            <BoardSquare x={x} y={y} sqType={type} pos={tilePositions} >{c}</BoardSquare>
+        </div>
+    )
+}
+
+function renderTile(x, y, tilePos){
+    for(let i = 0; i < tilePos.length; i++){
+        let currentTile = tilePos[i];
+        if(currentTile.x === x && currentTile.y === y){
+            console.log("AM here");
+            return <Tile key={currentTile.id} letter={currentTile.letter} id={currentTile.id} index={currentTile.index}/>
+        }
+    }
+   
+}
+
+const Board = (props) => {
     const boardMap = [
         ['TW','B','B','DL','B','B','B','TW','B','B','B','DL','B','B','TW'],
         ['B','DW','B','B','B','TL','B','B','B','TL','B','B','B','DW','B'],
@@ -21,28 +45,29 @@ const Board = () => {
         ['TW','B','B','DL','B','B','B','TW','B','B','B','DL','B','B','TW']
     ];
 
-    // const [currentBoard, setBoard] = useState(boardMap);
-    // useEffect(() => {
 
-    // });
+    const tilePositions = useSelector((state) => state.square.value.tilePositions);
+    const dispatch = useDispatch();
 
-    let board = [];
+    const [tilesOnBoard, setTilesOnBoard] = useState([]);
+
+    useEffect(() => {
+        setTilesOnBoard(tilePositions);
+    }, [tilePositions])
+
+    const squares = [];
+    let sqNum = 0;
     for(let i = 0; i < boardMap.length; i++){
-        let a = boardMap[i];
         for(let j = 0; j < 15; j++){
-            let val = a[j];
-           
-            //Create the coordinates of each square
-            let coords = i+","+j;
-        
-            //Save it to the array
-            //Creating an square passing the type and coordinates
-            board.push(<Square key={coords} squareType = {val} coords = {coords}/>);
+            sqNum += 1;
+            let sqType = boardMap[i][j];
+            squares.push(renderSquare(sqNum, i, j, sqType, tilePositions));
         }
     }
 
+
     return(
-        <div id="scrabble-board">{board}</div>
+        <div id="scrabble-board">{squares}</div>
     )
 
     
