@@ -69,8 +69,7 @@ const Rack = () => {
             dispatch(addToPlayerRack(letter));
         }
       
-        
-        
+    
     }
 
   
