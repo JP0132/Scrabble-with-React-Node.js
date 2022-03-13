@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from 'uuid';
 
 const initialState = {
     value: {
@@ -11,7 +12,11 @@ export const rackSlice = createSlice({
     initialState,
     reducers:{
         addToPlayerRack: (state, action) =>{
-            state.value.playerRack.push(action.payload);
+            let newLetter = {
+                letter: action.payload,
+                id: uuidv4()
+            }
+            state.value.playerRack.push(newLetter);
 
         },
         removeFromPlayerRack: (state, action) => {

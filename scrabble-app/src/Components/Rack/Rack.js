@@ -4,19 +4,16 @@ import Tile from "../Tile/Tile";
 import "../../StyleSheets/Rack.css";
 import { v4 as uuidv4 } from 'uuid';
 import { useDrop } from "react-dnd";
-
+import {storeSlicer} from "../../app/store";
 import { useState, useEffect, useContext, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actioncreators } from "../../state/action-creator/allActionsCreators";
 import { addToPlayerRack } from "../../features/rackSlice";
+import { removeFromSquare } from "../../features/squareSlice";
 
 
-
-
-//Need to get the rack from the game data
-//New action to fetch the rack
 
 const Rack = () => {
     //const playerRack = useSelector((state) => state.rack.playerRack);
@@ -45,30 +42,47 @@ const Rack = () => {
     }
 
     const [{isOver}, drop] = useDrop(() => ({
+
         accept:"tile",
-        drop: (item) => addToRack(item.letterValue),
+        drop: (item) => addToRack(item.letterValue, item.id),
         collect: (monitor) => ({
             isOver: !!monitor.isOver()
         })
     }))
 
-    const addToRack = (letter) => {
-        let newId = uuidv4();
-        dispatch(addToPlayerRack(letter));
+    const addToRack = (letter, id) => {
+        let currentStore = storeSlicer.getState();
+        let pos = currentStore.square.value.tilePositions;
+        //const found = pos.some(el => el.id === id);
+        let found = false;
+        var foundObject;
+
+        for(let i = 0; i < pos.length; i++){
+            if(pos[i].id === id){
+                found = true;
+                foundObject = i;
+            }
+        }
+
+        if(found){
+            dispatch(removeFromSquare(foundObject));
+            dispatch(addToPlayerRack(letter));
+        }
+      
+        
+        
     }
 
   
     return(
         <div ref={drop} className="rack">
             {playerRack.map((letter, index) => {
-                return <Tile key={uuidv4()} letter={letter} id={uuidv4()} index={index}/>
+                return <Tile key={uuidv4()} letter={letter.letter} id={letter.id} index={index}/>
             })}
-            
         </div>
-
     )
 
-    //{playerRack.map(letter => {return ( <Tile key={letter.id} letter={letter.letter} id={letter.id}/>)})}
+   
 
 }
 
