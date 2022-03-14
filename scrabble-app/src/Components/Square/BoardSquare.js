@@ -16,12 +16,28 @@ const BoardSquare = ({x, y, sqType, pos, children}) => {
 
     const [{isOver}, drop] = useDrop(() => ({
         accept:"tile",
+        canDrop: () => canDropOnSquare(x, y),
         drop: (item) => addToSquare(item.letterValue, item.id, item.index),
         collect: (monitor) => ({
             isOver: !!monitor.isOver()
         })
     }))
     
+    const canDropOnSquare = (x, y) => {
+        let currentStore = storeSlicer.getState();
+        let pos = currentStore.square.value.tilePositions;
+        //console.log("Positions",pos);
+        let found = true;
+        var foundObject;
+
+        for(let i = 0; i < pos.length; i++){
+            if(pos[i].x === x && pos[i].y === y){
+                found = false;
+                break;
+            }
+        }
+        return found;
+    }
 
     const addToSquare = (l, id, index) => {
         //console.log(index);
@@ -35,15 +51,17 @@ const BoardSquare = ({x, y, sqType, pos, children}) => {
             if(pos[i].id === id){
                 found = true;
                 foundObject = i;
+                break;
             }
         }
         console.log("Found",found);
+        
         if(found){
             console.log("updating");
             dispatch(updateTilePosition({id: id, index: foundObject, x: x, y: y}))
             console.log(pos);
-           
         }
+
         else{
             dispatch(removeFromPlayerRack(index));
             dispatch(addTile({id: id, letter: l, x: x, y: y}));
