@@ -1,10 +1,10 @@
 .App {
   text-align: center;
-  display: grid;
+  min-height: 100vh;
+  background-color:  rgb(248, 217, 176);
 }
 
-.centre{
-  display: grid;
-  place-content: center;
-  row-gap: 20px;
+body {
+  background-color:  rgb(248, 217, 176);
 }
+
