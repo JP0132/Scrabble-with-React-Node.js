@@ -1,4 +1,4 @@
-import LetterData from '../../JSONData/LetterData.json';
+import { storeSlicer } from '../../app/store';
 import { useState, useEffect } from 'react';
 import '../../StyleSheets/Tile.css'
 import { useDrag, useDrop } from 'react-dnd';
