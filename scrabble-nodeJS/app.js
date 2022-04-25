@@ -10,6 +10,7 @@ var jsonParser = bodyParser.json()
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 app.use('/api/computerMove/', jsonParser,require('./routes/calculateMove'))
+app.use('/api/validateWord/', jsonParser,require('./routes/validateMove'))
 
 const PORT = process.env.PORT || 3001
 
