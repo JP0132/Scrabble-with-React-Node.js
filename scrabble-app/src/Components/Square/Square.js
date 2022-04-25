@@ -11,13 +11,11 @@ import { memo } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { removeFromPlayerRack } from "../../features/rackSlice";
 
-
 const Square = ({x, y, sqType, children}) => {
     
     //const [letter, setLetter] = useState('');
     const [squareType, setSquareType] = useState('');
 
-    
     useEffect(() => {
         setSquareType(sqType)
     }, [sqType]);
@@ -35,8 +33,9 @@ const Square = ({x, y, sqType, children}) => {
     return(
         <div>
             <div className={`square ${sqType}`}>
-                {children|| bonus }
+                {children || bonus}
             </div>
+            
         </div>
     )
 
