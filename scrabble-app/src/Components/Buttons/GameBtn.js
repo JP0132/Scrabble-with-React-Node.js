@@ -1,7 +1,7 @@
-import "../../StyleSheets/ShuffleBtn.css"
+import "../../StyleSheets/GameBtn.css"
 const GameBtn = ({handleAction, text}) => {
     return (
-        <button id="shuffleBtn" onClick={() => handleAction()}>{text}</button>
+        <button className="gameBtn" onClick={() => handleAction()}>{text}</button>
     );
 }
 
