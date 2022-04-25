@@ -1,10 +1,8 @@
 .tile{
     line-height: 53.4px;
-    margin: 10px 10px 10px 10px;
     width: 53.4px;
     height: 53.4px;
     background-color: rgb(236, 225, 190);
-   
 }
 
 .tileLetter{
@@ -12,7 +10,6 @@
     display: inline-block;
     vertical-align: middle;
     font-weight: bold;
-    
 }
 
 .tileNum{
