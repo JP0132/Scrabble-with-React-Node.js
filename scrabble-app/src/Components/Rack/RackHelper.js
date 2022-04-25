@@ -1,29 +1,49 @@
 import LetterData from '../../JSONData/LetterData.json';
+import {storeSlicer} from "../../app/store";
+import { useDispatch, useSelector } from "react-redux";
+import { addTileToBag, removeTileFromBag } from "../../features/tilebagSlice";
+import { useState, useEffect } from "react";
 
 export function DrawTiles(num) {
+    
+    //const tilebag = useSelector((state) => state.tilebag.value);
+    let currentStore = storeSlicer.getState();
+    let tilebag = currentStore.tilebag.value
+    // const [bag, setBag] = useState(tilebag);
+    // useEffect(() => {
+    //     setBag(tilebag);
+    // }, [tilebag]);
+
     let rack = [];
-    if(LetterData.bag === 0){
+    if(tilebag.bag === 0){
         return rack;
     }
+    //console.log(tilebag.bag);
     for(let i = 0; i < num; i++){
-        if(LetterData.bag === 0){
+        currentStore = storeSlicer.getState();
+        tilebag = currentStore.tilebag.value
+        if(tilebag.bag === 0){
             return rack;
         }
-        let randomLetter = LetterData.letters[Math.floor(Math.random() * LetterData.letters.length)];
-       
-        let noOfLetter = LetterData[randomLetter].number;
-                    
-        LetterData[randomLetter].number = noOfLetter - 1;
-        noOfLetter = LetterData[randomLetter].number;
 
-        if(noOfLetter == 0){
-            let index = LetterData.letters.indexOf(randomLetter);
-            LetterData.letters.splice(index, 1);
-        }
+        let randomLetter = tilebag.letters[Math.floor(Math.random() * tilebag.letters.length)];
+       
+        //let noOfLetter = tilebag[randomLetter].number;
+                    
+        //tilebag[randomLetter].number = noOfLetter - 1;
+        storeSlicer.dispatch(removeTileFromBag(randomLetter))
+        //dispatch(removeTileFromBag(randomLetter));
+        
+        //noOfLetter = tilebag[randomLetter].number;
+
+        // if(noOfLetter == 0){
+        //     let index = tilebag.letters.indexOf(randomLetter);
+        //     tilebag.letters.splice(index, 1);
+        // }
                     
         rack.push(randomLetter);
-        let currentbag = LetterData.bag;
-        LetterData.bag = currentbag - 1;
+        //let currentbag = tilebag.bag;
+        //LetterData.bag = currentbag - 1;
         
     }
     return rack;
