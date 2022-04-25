@@ -2,7 +2,7 @@ import Square from '../Square/Square';
 import { boardMap } from './boardMap';
 import { useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
-import { removeFromPlayerRack } from "../../features/rackSlice";
+import { removeFromPlayerRack, removeFromSwapRack } from "../../features/rackSlice";
 import { addTile, updateTilePosition } from "../../features/squareSlice";
 import {storeSlicer} from "../../app/store";
 
@@ -33,19 +33,34 @@ const BoardSquare = ({x, y, sqType, pos, children}) => {
         for(let i = 0; i < pos.length; i++){
             if(pos[i].x === x && pos[i].y === y){
                 found = false;
-                break;
+                return found;
             }
         }
-        return found;
+
+        if(found){
+            let currentStore = storeSlicer.getState();
+            let currentBoard = currentStore.board.value.currentBoard;
+            if(currentBoard[y][x] !== "*"){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        
     }
 
     const addToSquare = (l, id, index) => {
         //console.log(index);
         let currentStore = storeSlicer.getState();
         let pos = currentStore.square.value.tilePositions;
-        console.log("Positions",pos);
+        let tiles = currentStore.rack.value.tilesToSwap;
+        //console.log("Positions",pos);
         let found = false;
         var foundObject;
+
+        let swapFound = false;
+        var foundSwapObject;
 
         for(let i = 0; i < pos.length; i++){
             if(pos[i].id === id){
@@ -54,12 +69,24 @@ const BoardSquare = ({x, y, sqType, pos, children}) => {
                 break;
             }
         }
-        console.log("Found",found);
+        //console.log("Found",found);
+
+        for(let i = 0; i < tiles.length; i++){
+            if(tiles[i].id === id){
+                swapFound = true;
+                foundSwapObject = i;
+            }
+        }
         
         if(found){
-            console.log("updating");
+            //console.log("updating");
             dispatch(updateTilePosition({id: id, index: foundObject, x: x, y: y}))
-            console.log(pos);
+            //console.log(pos);
+        }
+
+        else if(swapFound){
+            dispatch(removeFromSwapRack(foundSwapObject));
+            dispatch(addTile({id: id, letter: l, x: x, y: y}));
         }
 
         else{
@@ -75,7 +102,6 @@ const BoardSquare = ({x, y, sqType, pos, children}) => {
             <Square sqType={sqType}>{children}</Square>
         </div>
     )
-   //TODO: Make the tile appear, try passing it to the square the orginal method again
 
 }
 
