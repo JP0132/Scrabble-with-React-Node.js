@@ -4,10 +4,32 @@ import { useState, useEffect } from "react";
 import Tile from '../Tile/Tile';
 import BoardSquare from '../Square/BoardSquare';
 import { useDispatch, useSelector } from 'react-redux';
+import { BoardCoords } from '../Square/boardMap';
+import { LetterData } from '../../JSONData/LetterData.json';
+import BoardTile from '../Tile/BoardTile';
 
-function renderSquare(squareNum, y, x, type, tilePositions){
-
-    let c = renderTile(x, y, tilePositions);
+function renderSquare(squareNum, y, x, tilePositions, p){
+    var c;
+    if(p !== "*"){
+        c = <BoardTile letter={p}/>
+    }
+    else{
+        c = renderTile(x, y, tilePositions);
+    }
+    
+    var type = "B";
+    var sqTypeKeys = Object.keys(BoardCoords);
+    for(let i = 0; i < sqTypeKeys.length; i++){
+        const currentType = BoardCoords[sqTypeKeys[i]];
+        for(let j = 0; j < currentType.length; j++){
+            if(currentType[j].x == x && currentType[j].y == y){
+                type = sqTypeKeys[i];
+                break;
+            }
+        }
+    }
+  
+    
     return(
         <div key={squareNum}>
             <BoardSquare x={x} y={y} sqType={type} pos={tilePositions} >{c}</BoardSquare>
@@ -19,11 +41,10 @@ function renderTile(x, y, tilePos){
     for(let i = 0; i < tilePos.length; i++){
         let currentTile = tilePos[i];
         if(currentTile.x === x && currentTile.y === y){
-            console.log("AM here");
-            return <Tile key={currentTile.id} letter={currentTile.letter} id={currentTile.id} index={currentTile.index}/>
+            //console.log("AM here");
+            return <Tile key={currentTile.id} letter={currentTile.letter} id={currentTile.id} index={currentTile.index} style={{position:'absolute'}}/>
         }
     }
-   
 }
 
 const Board = (props) => {
@@ -49,19 +70,21 @@ const Board = (props) => {
     const tilePositions = useSelector((state) => state.square.value.tilePositions);
     const dispatch = useDispatch();
 
-    const [tilesOnBoard, setTilesOnBoard] = useState([]);
+    // const [tilesOnBoard, setTilesOnBoard] = useState([]);
 
-    useEffect(() => {
-        setTilesOnBoard(tilePositions);
-    }, [tilePositions])
+    // useEffect(() => {
+    //     setTilesOnBoard(tilePositions);
+    // }, [tilePositions])
+
+    const currentBoard = useSelector((state) => state.board.value.currentBoard);
 
     const squares = [];
     let sqNum = 0;
-    for(let i = 0; i < boardMap.length; i++){
+    for(let i = 0; i < currentBoard.length; i++){
         for(let j = 0; j < 15; j++){
             sqNum += 1;
-            let sqType = boardMap[i][j];
-            squares.push(renderSquare(sqNum, i, j, sqType, tilePositions));
+            let p = currentBoard[i][j];
+            squares.push(renderSquare(sqNum, i, j, tilePositions, p));
         }
     }
 
