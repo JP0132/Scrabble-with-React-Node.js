@@ -1,0 +1,17 @@
+.gameBtn{
+    background-color: rgb(113, 169, 241);
+    color: white;
+    width: 300px;
+    height: 60px;
+    border: none;
+    outline: none;
+    margin-left: 5px;
+    box-sizing: border-box;
+    font-weight: bold;
+    border-radius: 5%;
+}
+
+.gameBtn:hover{
+    cursor: pointer;
+    background-color: rgb(55, 111, 185);
+}

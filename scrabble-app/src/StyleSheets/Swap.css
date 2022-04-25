@@ -1,0 +1,54 @@
+.swapRack{
+    width: 700px;
+    height: 80px;
+    padding: 10px;
+    background-color: #5180c7;
+    display: flex;
+    flex-direction: row;
+}
+
+.place{
+    width: 500px;
+    background-color: #212d63;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.conBtn{
+    margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.swapBtns{
+    width: 150px;
+    height: 50px;
+    font-weight: bold;
+    background-color: #46a86a;
+    color: #ffffff;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 2px 4px 2px #000000;
+}
+
+#cancel{
+    background-color: #c4294a;
+}
+
+#ok:hover{
+    background-color: #71dd98;
+}
+#cancel:hover{
+    background-color: #f37b7b;
+}
+
+#cancel:disabled,
+#cancel[disabled]{
+  background-color: #cccccc;
+  color: #666666;
+  cursor: no-drop;
+}
