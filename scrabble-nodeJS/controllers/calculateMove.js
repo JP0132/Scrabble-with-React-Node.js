@@ -1,757 +1,485 @@
+const Dawg = require('../helpers/dawg.js');
+const CrossCheck = require('../helpers/CrossCheck.js');
 var fs = require('fs');
-const readline = require('readline');
 
-
+var dawg;
+var longestString = {
+    word:"",
+    x: 0,
+    y: 0,
+    start:0,
+    end: 0,
+    direction: ""
+};
 
 exports.calculateMove = (req, res) => {
-    console.log("Calculating Move");
-    //console.log(req.body.rack);
-    //console.log(req.body.board);
+    console.log("Move Generation");
     let rack = req.body.rack;
     let board = req.body.board;
+    console.log("Computer rack that passed", rack);
+    console.log("Board passed", req.body.board);
+    dawg = new Dawg();
 
-    const searchGaddag =  async () => {
-        const result = await createGaddag();
+    let dictionaryText = "../scrabble-nodeJS/CollinsScrabbleWords(2019).txt";
 
-        setTimeout(function(){
-            console.log("finishedBuilding");
-            //console.log(result.find("HE"));
-            //console.log(result.find("OUT"));
-            //console.log(result.wordExist("HEL"));
-            console.log(result.wordExist("OUTS"));
-            console.log(result.wordExist("OUTR"));
-            searchBoard(board, result, rack).then(d =>{
-                res.json({
-                    "letters": d,
-                    "hello":"chris"
-                })
+    async function readingDict(dict){
+        const data = await fs.promises.readFile(dict);
+        return data;
+    }
+
+    readingDict(dictionaryText).then((data) => {
+        let newD = new Dawg();
+        const lines = data.toString().split('\r\n');
+        for(let i =0; i < lines.length; i++){
+            newD.insert(lines[i]);
+        }
+        newD.finish();
+
+        dawg = newD;
+
+        searchBoard(board, rack).then(d =>{
+            //console.log("Data returend by search board", d);
+            console.log(longestString);
+            res.json({
+                "letters": longestString,
+                "sent":"Sending Data"
             });
-            // res.json({
-            //     "hello":"chris"
-            // });
-        }, 5000) 
-    }
-    
-    searchGaddag();
-    
-}
-
-
-async function createGaddag(){
-    const g = new Gaddag("../scrabble-nodeJS/CollinsScrabbleWords(2019).txt");
-    return g;
-
-}
-
-async function searchBoard(board, gaddag, rack){
-    //Search Each Row
-    let rowMoves2 = await searchAllRows(board, gaddag, rack);
-    let columnMoves2 = await searchAllColumns(board, gaddag, rack);
-
-    let rowWords = [];
-    let columnWords = [];
-
-    for(let i = 0; i < rowMoves2.length; i++){
-        let rowW = await tryLetters(rowMoves2[i], rack, gaddag);
-        rowWords.push(rowW);
-    }
-
-    for(let j = 0; j < columnMoves2.length; j++){
-        let colW = await tryLetters(columnMoves2[j], rack, gaddag);
-        columnWords.push(colW);
-    }
-
-    let rowMoves = rowWords;
-    let columnMoves = columnWords;
-    let longestR = [];
-    let longestL = [];
-    let rowRight = [];
-    let rowLeft = [];
-
-    let colRight = [];
-    let colLeft = [];
-
-    for(let i = 0; i < rowMoves.length; i++){
-        rowRight.push(rowWords[i].right);
-        rowLeft.push(rowWords[i].left);
-    }
-
-    
-    for(let i = 0; i < columnMoves.length; i++){
-        colRight.push(columnMoves[i].right);
-        colLeft.push(columnMoves[i].left);
-    }
-    rowRight = rowRight.flat();
-    rowLeft = rowLeft.flat();
-
-    colRight = colRight.flat();
-    colLeft = colLeft.flat();
-    
-    
-    if(rowLeft.length !== 0 && colLeft.length !== 0){
-        longestL.push(longestWord(rowLeft));
-        longestL.push(longestWord(colLeft));
-    }
-    else{
-        if(rowLeft.length !== 0){
-            longestL.push(longestWord(rowLeft));
-        }
-        else{
-            longestL.push(longestWord(colLeft));
-        }
-    }
-    if(rowRight.length !== 0 && colRight.length !== 0){
-        longestR.push(longestWord(rowRight));
-        longestR.push(longestWord(colRight));
-    }
-    else{
-        if(rowRight.length !== 0){
-            longestR.push(longestWord(rowRight));
-        }
-        else{
-            longestR.push(longestWord(colRight));
-        }
-    }
-
-    
-    let l = longestWord(longestL);
-    let r = longestWord(longestR);
-    let lon = longestWord([l,r]);
-
-    console.log("Row Moves", rowMoves);
-    console.log("Column Moves", columnMoves);
-    console.log("Column Moves", columnMoves2);
-    console.log("Column Left Moves", colLeft);
-    console.log("Longest Word", lon);
-
-
-    return rowMoves.concat(columnMoves); 
-}
-
-function longestWord(arr){
-    return arr.reduce((a,b) => a.length < b.length ? b : a, "");
-}
-
-async function searchAllRows(board, gaddag, rack){
-    //Search Each Row
-    var validWords = [];
-    for(let row = 0; row < board.length; row++){
-        let currentRow = board[row];
-        //console.log(row, currentRow);
-        //Check if row is empty or not
-        var flag = 1;
-        let blankSq = "*";
-        var squarePosition = 0;
-        for(let i = 0; i < currentRow.length; i++){
-            if(currentRow[i] !== blankSq){
-                squarePosition = i;
-                flag = 0;
-                break;
-            }
-        }
-        //If row is not empty
-        if(flag === 0){
-            //Checking this row
-            //Adding letter found on the row to list
-            
-            let currentLetterRow = "";
-            var freeSpacesLeft = 0;
-            var freeSpacesRight = 0;
-         
-            let startposition = 0;
-            let endposition = 0;
-            let sep = 0;
-
-            var lettersOnRow = [];
-        
-            for(let x = 0; x < currentRow.length; x++){
-                //console.log("x", x);
-                
-                let currentSquare = currentRow[x];
-                
-                //console.log(lettersOnRow);
-               
-                if(currentSquare !== "*"){
-                  
-                    if(freeSpacesRight !== 0){
-                        let lset = [];
-                        endposition = x-freeSpacesRight;
-                        sep +=1;
-                
-                       
-                        rightFreePos = x-1;
-                        
-                        lset.push(freeSpacesLeft, freeSpacesRight, currentLetterRow, startposition, endposition, row);
-                        lettersOnRow.push(lset);
-                        if(sep > 0){
-                            freeSpacesLeft = freeSpacesRight;
-                            freeSpacesRight = 0;
-                        }
-                        else{
-                            currentLetterRow = "";
-                            freeSpacesLeft = 0;
-                            freeSpacesRight = 0;
-                        }
-                        
-                    }
-                    if(currentLetterRow == ""){
-                        startposition = x;
-                    }
-                    
-                
-                    currentLetterRow += currentSquare;
-                    // for(let j = x+1; j < currentRow.length; j++){
-                    //     if(currentRow[j] ===! "*"){
-                    //         currentLetterRow += currentRow[j];
-                    //     }
-               
-                }
-                else{
-                    if(currentLetterRow !== ""){
-                        freeSpacesRight = freeSpacesRight + 1;
-
-                    }
-                    else{
-                        leftFreePos = x;
-                        freeSpacesLeft = freeSpacesLeft + 1;
-
-                    }
-                    
-                }
-
-                if(x === 14 && freeSpacesRight !== 0){
-                    let lset = [];
-                    endposition = x-freeSpacesRight;
-                    lset.push(freeSpacesLeft, freeSpacesRight, currentLetterRow, startposition, endposition, row);
-                    lettersOnRow.push(lset);
-                    //console.log("current", lettersOnRow);
-                }
-                
-            }
-
-        
-
-           // let foundWords = await tryLetters(lettersOnRow, rack, gaddag);
-           // validWords.push(foundWords);
-           validWords.push(lettersOnRow);
-           
-
-            
-        }
-    
-    }
-    return validWords;
-}
-
-async function searchAllColumns(board, gaddag, rack){
-    var validWords = [];
-    const getColumn = (arr, n) => arr.map(x => x[n]);
-    for(let column = 0; column < board.length; column++){
-        let currentColumn = getColumn(board, column);
-       
-        for(let y = 0; y < currentColumn.length; y++){
-            var flag = 1;
-            let blankSq = "*";
-            var squarePosition = 0;
-            if(currentColumn[y] != "*"){
-                flag = 0;
-                squarePosition = y
-                break;
-            }
-           
-           
-        }
-
-        if(flag === 0){
-            
-            let currentLetterRow = "";
-            var freeSpacesLeft = 0;
-            var freeSpacesRight = 0;
-            var startposition = 0;
-            var endposition = 0;
-            var sep = 0;
-
-
-            var lettersOnRow = [];
-        
-            for(let x = 0; x < currentColumn.length; x++){
-                //console.log("y", x);
-                
-                let currentSquare = currentColumn[x];
-                
-                //console.log(lettersOnRow);
-               
-                if(currentSquare !== "*"){
-                    if(freeSpacesRight !== 0){
-                        let lset = [];
-                        endposition = x-freeSpacesRight;
-                        sep +=1;
-                
-                       
-                        rightFreePos = x-1;
-                        
-                        lset.push(freeSpacesLeft, freeSpacesRight, currentLetterRow, startposition, endposition, column);
-                        lettersOnRow.push(lset);
-                        if(sep > 0){
-                            freeSpacesLeft = freeSpacesRight;
-                            freeSpacesRight = 0;
-                        }
-                        else{
-                            currentLetterRow = "";
-                            freeSpacesLeft = 0;
-                            freeSpacesRight = 0;
-                        }
-                    }
-                    if(currentLetterRow == ""){
-                        startposition = x;
-                    }
-                    currentLetterRow += currentSquare;
-                    // for(let j = x+1; j < currentRow.length; j++){
-                    //     if(currentRow[j] ===! "*"){
-                    //         currentLetterRow += currentRow[j];
-                    //     }
-               
-                }
-                else{
-                    if(currentLetterRow !== ""){
-                        freeSpacesRight = freeSpacesRight + 1;
-
-                    }
-                    else{
-                        freeSpacesLeft = freeSpacesLeft + 1;
-
-                    }
-                    
-                }
-
-                if(x === 14 && freeSpacesRight !== 0){
-                    let lset = [];
-                    endposition = x-freeSpacesRight;
-                    lset.push(freeSpacesLeft, freeSpacesRight, currentLetterRow, startposition, endposition, column);
-                    lettersOnRow.push(lset);
-                    console.log("current", lettersOnRow);
-                }
-                
-            }
-
-            //let foundWords = await tryLetters(lettersOnRow, rack, gaddag);
-                //validateWords(words);
-            //validWords.push(foundWords);
-            validWords.push(lettersOnRow);
-          
-
-
-        }
-            
-    }
-    return validWords;
-}
-
-
-
-async function tryLetters(currentLetters, rack, gaddag){
-    let tryWords = [];
-    rightWords = [];
-    leftWords = [];
-    
-    let r = await fillRight(rack, currentLetters[0][2], gaddag, null, currentLetters[0][1],[], currentLetters[0][4]);
-    rightWords = [];
-    let l = await fillLeft(rack, currentLetters[0][2], gaddag, null, currentLetters[0][0],[], currentLetters[0][3]);
-    leftWords = []
-
-    // for(let i = 0; i < currentLetters.length; i++){
-    //     let tryL = currentLetters[i][2];
-    //     let l = await fillRight(rack, currentLetters[0][2], gaddag, null);
-    //     let fitWords = l.filter(word => word.length < currentLetters[i][1]-1)
-    // }
-
-    
-    
-    console.log("left",l);
-    console.log("right",r);
-    return {
-        left: l,
-        right: r
-    } ;
-
-    
-}
-
-
-
-
-var rightWords = [];
-var leftWords = [];
-
-
-
-async function fillRight(rack, test, gaddag, pos, freeSpacesRight, letterUsed = [], endpos){
-    for(let i = 0; i < rack.length; i++){
-        if(pos === i){
-            //console.log("yo");
-            continue;
-        }
-        let l = rack[i];
-        let testWord =  test + l;
-        //console.log(testWord);
-        if(gaddag.wordExist(testWord) == "Y"){
-            //letterUsed += l;
-            //letterUsed.push(i);
-            
-            //console.log("letter ", letterUsed, " ", "word ", testWord);
-            rightWords.push(testWord);
-            //letterUsed = "";
-            fillRight(rack, testWord, gaddag, i, freeSpacesRight);
-        }
-        else if(gaddag.wordExist(testWord) == "N"){
-            if(testWord.length >= freeSpacesRight){
-                break;
-            }
-            
-            
-            //console.log("letter2 ", letterUsed, " ", "word2 ", testWord);
-            fillRight(rack, testWord, gaddag, i, freeSpacesRight);
-        }
-        
-        
-    }
-
-    return rightWords;
-
-}
-
-async function fillLeft(rack, test, gaddag, pos, freeSpacesLeft,letterUsed, startpos){
-    //let tempRack = rack;
-    
-    for(let i = 0; i < rack.length; i++){
-        if(pos === i){
-            continue;
-        }
-        let l = rack[i];
-        let testWord =  l + test;
-        //console.log(testWord);
-        if(gaddag.wordExist(testWord) == "Y"){
-            leftWords.push(testWord);
-            // let index = tempRack.indexOf(l);
-            // if(index > -1){
-            //     tempRack.splice(index, 1);
-
-            // }
-            
-            //console.log(letterUsed, testWord);
-            
-            fillLeft(rack, testWord, gaddag, i, freeSpacesLeft);
-        }
-        else if(gaddag.wordExist(testWord) == "N"){
-            if(testWord.length >= freeSpacesLeft){
-                break;
-            }
-            // let index = tempRack.indexOf(l);
-            // tempRack.splice(index, 1);
-            
-            fillLeft(rack, testWord, gaddag, i, freeSpacesLeft);
-        }
-        
-    }
-
-    return leftWords;
-
-}
-
-
-
-/*
-Concept of GADDAG
-Each word inserted n times => n representing the length of the word
-Each insertion has a special symbol
-Prefix is reversed
-GADDAG is based on a DAWG, which is based on a TRIE
-*Using npm gaddag implementation with changes
-*/
-
-
-
-
-class GaddagNode{
-    constructor(id = 0){
-        this.id = id;
-        this.edges = {};
-        this.$ = 0;
-    }
-
-}
-
-
-
-class Gaddag{
-    constructor (dict){
-        //fs.readFile(dict, (err, data) => this.loadDictionary(err, data));
-        this.root = new GaddagNode();
-
-        //Vars to be used for gaddag implementation
-        //Previous word entered into the gaddag
-        this.previousWord = "";
-        this.uncheckedNodes = [];
-        this.nextId = 1;
-        this.minimizedNodes = {};
-
-        //Read the dictionary text file into the data structure
-        this.readLine(dict);
-        
-    }
-
-    str(node){
-        //checks if the end of the the node or not
-        var s = node.$ ? "1" : "0";
-        //Get all the object keys of the nodes
-        var keys = Object.keys(node.edges);
-        for(let i = 0; i < keys.length; i++){
-            s+= "_" + node.edges[keys[i]] + "_" + node.edges[keys[i]].id;
-        }
-        return s;
-    }
-
-    minimization(nodeNum){
-        //Going through the uncheckedNodes
-        for(let i = this.uncheckedNodes.length-1; i > nodeNum - 1; i--){
-            //Getting set of uncheckedNodes
-            var tuple = this.uncheckedNodes.pop();
-            var childKey = this.str(tuple.childNode);
-            var node = this.minimizedNodes[childKey];
-
-            if(node){
-                tuple.parentNode.edges[tuple.letter] = node;
-            }
-            else{
-                this.minimizedNodes[childKey] = tuple.childNode;
-            }
-        }
-    }
-
-   
-
-
-    insert(word){
-        //console.log("inserting", word);
-        let commonPrefix = 0;
-    
-
-        //Selecting the smallest word length so no out of bounds error occurs
-        var minWordLength = Math.min(word.length, this.previousWord.length);
-
-        //Find where in the word the common prefix is up till in the new word
-        //Usec to minimise the nodes and where to insert the node
-        for(let i = 0; i < minWordLength; i++){
-            if(word[i] !== this.previousWord[i]){
-                break
-            }
-            commonPrefix +=1;
-        }
-        
-        //mimise the nodes
-        this.minimization(commonPrefix);
-
-        //If a new node "tree" for a new letter is needed
-        var node;
-        if(this.uncheckedNodes.length === 0){
-            node = this.root;
-        } else{
-            node = this.uncheckedNodes[this.uncheckedNodes.length-1].childNode;
-        }
-
-
-
-        //Adding the part of the word that is not a common prefix
-        const slicedWord = word.slice(commonPrefix);
-        //console.log("slicedWord", slicedWord);
-        for(let i = 0; i < slicedWord.length; i++){
-            //creates a new node, has a new id
-            //increments the id
-            var ltr = slicedWord[i];
-        
-
-            
-            var currentNode = new GaddagNode(this.nextId);
-            this.nextId += 1;
-            //gets the value for the node
-          
-            
-         
-            //adds the current node to the nodes
-            node.edges[ltr] = currentNode;
-            //adds to unchecked for minimisation
-            this.uncheckedNodes.push({
-                parentNode: node,
-                letter: ltr,
-                childNode: currentNode
-            });
-            
-            node = currentNode;
-        }
-        //end of the word has been reached
-        //special indicator is equal to one for the node
-        node.$ = 1;
-        this.previousWord = word;
-
-    }
-
-    //Finds if the part of a word exists
-    find(word){
-        var node = this.root;
-        for(let i = 0; i < word.length; i++){
-            let letter = word[i];
-            if(!node.edges[letter]){
-                return 0;
-            }
-            node = node.edges[letter];
-        }
-        return 1;
-    }
-
-
-
-    //Check if the word is in the gaddag
-    wordExist(word){
-        var node = this.root;
-        //Loops through the node cnildren each time
-        for(let i = 0; i < word.length; i++){
-            let letter = word[i];
-            if(!node.edges[letter]){
-                return 0;
-            }
-            node = node.edges[letter];
-        }
-
-        if(node.$){
-            return "Y"
-            
-        }
-        return "N";
-        
-    }
-
-    finish(){
-        this.minimization(0);
-        this.uncheckedNodes = null;
-        this.minimizedNodes = null;
-        this.previousWord = null;
-        this.nextId = null;
-    }
-    
-    readLine(dict){
-        console.log("Reading the dictionary");
-        //Reading each line of the text file
-        //Creating a inteface to read each line
-        this.lineReader = readline.createInterface({
-            input: require('fs').createReadStream(dict)
-        });
-
-        //Will be used to sort the words of the dictionary by letter
-        const words = {
-            A: [],
-            B: [],
-            C: [],
-            D: [],
-            E: [],
-            F: [],
-            G: [],
-            H: [],
-            I: [],
-            J: [],
-            K: [],
-            L: [],
-            M: [],
-            N: [],
-            O: [],
-            P: [],
-            Q: [],
-            R: [],
-            S: [],
-            T: [],
-            U: [],
-            V: [],
-            W: [],
-            X: [],
-            Y: [],
-            Z: []
-        };
-         
-        //Using the interface to read each line
-        this.lineReader.on('line', function (line) {
-            //console.log(line);
-            //Used to sort each word into corresponding letter object arrays
-            //Each word is also reversed, as required for a gaddag
-            const mapWord = (line) => {
-                return (letter, index, arr) =>
-                  words[letter].push(
-                    index === 0
-                    ? line
-                    : line.slice(index, line.length) + '_' + arr.slice(0, index).reverse().join(''));
+            longestString = {
+                word:"",
+                x: 0,
+                y: 0,
+                start:0,
+                end: 0,
+                direction: ""
             };
+        });
+    });
 
-            const addToWords =  (line) => {
-                for(let i = 0; i < line.length; i++){
-                    let reverseWord = line.slice(0, i+1).split("").reverse().join('');
-                    let secondPart = line.slice(i+1);
-                    let wordToAdd = reverseWord +"$"+ secondPart;
-                    words[wordToAdd[0]].push(wordToAdd);
-                    
+}
+async function createDawg(){
+    //const g = new Gaddag("../scrabble-nodeJS/CollinsScrabbleWords(2019).txt");
+    const dawg = new Dawg("../scrabble-nodeJS/CollinsScrabbleWords(2019).txt");
+    //const gaddag = new Gaddag("../scrabble-nodeJS/test.txt");
+    return dawg;
+}
+
+async function searchBoard(board, rack){
+    console.log("Search Board that passed", rack);
+    var validWords = [];
+    //Search Each Row
+    for(let y = 0; y < 15; y++){
+        let currentRow = board[y];
+            for(let x = 0; x < 15; x++){      
+                if(currentRow[x] !== "*"){
+                    //Checking if the tile is an anchor
+                    let anchorConfirm = await isAnchor(board, x, y);
+                    //If at least one blank space has been found
+                    if(anchorConfirm.up || anchorConfirm.down || anchorConfirm.left || anchorConfirm.right){
+                        //Get the tiles already placed and free spaces
+                        let w = await getAlreadyPlacedTilesRow(anchorConfirm.left, anchorConfirm.right,anchorConfirm.up,anchorConfirm.down,y, x, rack, board);
+                    }
+        
                 }
             }
+    }
+    return validWords;
+}
 
-            
-            
-      
-         
-            
-            if(line === "FINALLINE"){
-                console.log("Finish");
-                //console.log(words);
-                //Code for inserting each object array
-                //into the gaddag will go here
+//For each direction that is true
+//Enter the move generation to find possible moves to play
+async function getAlreadyPlacedTilesRow(left, right, up, down, y, x, rack, board){
+    
+    //Get the free spaces to place a tile on the left of the anchor
+    var freeSpacesLeft = 0;
+    //Free spaces above the tile
+    var freeSpacesUp = 0;
 
-                //console.log(words);
+    let foundWords = [];
+    let currentLetters = "";
 
-                //Getting the word object keys
-                //Keys = A, B, C...
-                var wordKeys = Object.keys(words);
-                for(let i = 0; i < wordKeys.length; i++){
-                    const keyWordList = words[wordKeys[i]].sort();
-                    for(let j = 0; j < keyWordList.length; j++){
-                        insertingIntoGaddag(keyWordList[j]);
+    //If the left of the anchor is empty
+    if(left){
+        //currentLetters += board[y][x];
+        for(let i = x-1; i > -1; i--){
+            if(board[y][i] != "*"){
+                break;
+            }
+            freeSpacesLeft += 1;
+        }
+
+        let anchor = {
+            x: x,
+            y: y
+        };
+
+        let cross = {
+            x: x-1,
+            y: y
+        };
+        let found = await leftPart("", dawg.getRootNode(), freeSpacesLeft, anchor, rack,"R", board, cross);
+        foundWords.push(found);
+        //console.log("Anchor created", anchor);
+        // if(freeSpacesLeft !== 1 && x !== 1){
+        //     let found = await leftPart("", dawg.getRootNode(), freeSpacesLeft, anchor, rack,"R", board, cross);
+        //     foundWords.push(found);
+        // }
+        // if(freeSpacesLeft == 1 && x == 1){
+        //     let found = await leftPart("", dawg.getRootNode(), freeSpacesLeft, anchor, rack,"R",board, cross);
+        //     foundWords.push(found);
+        // }
+
+        
+        //console.log("Anchor words been search", found);
+       
+    }
+
+    //If the right of the anchor is free
+    else if(right){
+        currentLetters += board[y][x];
+        for(let i = x-1; i >= 0; i--){
+            if(board[y][i] !== "*"){
+                currentLetters = board[y][i] + currentLetters;
+            }
+            else{
+                break;
+            }  
+        }
+        let anchor = {
+            x: x+1,
+            y: y
+        }
+        let tempNode = dawg.getNode(currentLetters);
+        console.log("LETTER IN RRGJ", currentLetters, x);
+        let found = await extendRight(currentLetters, tempNode, anchor, rack,"R", true, board);
+        currentLetters = "";
+        foundWords.push(found);
+        //extendRight(currentLetters, node, square, rack); 
+    }
+
+     //If the left of the anchor is empty
+     if(up){
+        //currentLetters += board[y][x];
+        for(let i = y-1; i > -1; i--){
+            if(board[i][x] != "*"){
+                break;
+            }
+            freeSpacesUp += 1;
+        }
+       
+
+        let anchor = {
+            x: x,
+            y: y,
+        };
+
+        let cross = {
+            x: x,
+            y: y-1,
+        }
+
+        let found = await leftPart("", dawg.getRootNode(), freeSpacesUp, anchor, rack, "Col",board, cross);
+        foundWords.push(found);
+
+        // if(freeSpacesUp !== 1 && y !== 1){
+           
+        //     let found = await leftPart("", dawg.getRootNode(), freeSpacesUp, anchor, rack, "Col",board, cross);
+        //     foundWords.push(found);
+        // }
+        // if(freeSpacesUp == 1 && y == 1){
+        //     let found = await leftPart("", dawg.getRootNode(), freeSpacesUp, anchor, rack,"Col",board, cross);
+        //     foundWords.push(found);
+        // }
+        //console.log("Anchor created", anchor);
+
+        //let found = await leftPart("", dawg.getRootNode(), freeSpacesUp, anchor, rack);
+        //console.log("Anchor words been search", found);
+        //foundWords.push(found);
+    }
+
+    //If the right of the anchor is free
+    else if(down){
+        currentLetters = board[y][x] + currentLetters;
+        for(let i = y-1; i >= 0; i--){
+            if(board[i][x] !== "*"){
+                currentLetters = board[i][x] + currentLetters;
+            }
+            else{
+                break;
+            }  
+        }
+    
+        let anchor = {
+            x: x,
+            y: y+1
+        };
+
+        let tempNode = dawg.getNode(currentLetters);
+        console.log("LETTER IN RRGJ", currentLetters, y);
+        let found = await extendRight(currentLetters, tempNode, anchor, rack,"Col",true, board);
+        currentLetters = "";
+        foundWords.push(found);
+        //extendRight(currentLetters, node, square, rack); 
+    }
+    
+    return;
+}
+
+async function leftPart(partialWord, node, limit, anchor, rack, direction, board, cross){
+    console.log("Anchor", anchor);
+    if(partialWord !== ""){
+        let validWords = await extendRight(partialWord, node, anchor, rack, direction,false, board);
+    }
+    
+    let a = [];
+    //a.concat(validWords);
+    if(limit > 0){
+        //console.log("Limit is not zero");
+        for(let i = 0; i < rack.length; i++){
+            let check = dawg.checkIfNodeExists(node, rack[i]);
+            if(check == 1){
+                let crossCheck;
+                if(direction == "R"){
+                    //console.log("CHECKING CROSS CHECK");
+                    crossCheck = await CrossCheck.rowCrossChecks(cross, rack[i], board, dawg);
+                    if(cross.x !== 0){
+                        cross.x = cross.x - 1;
                     }
                 }
-                finishBuilding();
+                else{
+                    //console.log("CHECKING CROSS CHECK");
+                    crossCheck = await CrossCheck.columnCrossChecks(cross, rack[i], board, dawg);
+                    if(cross.y !== 0){
+                        cross.y = cross.y - 1;
+                    }
+                } 
+                if(crossCheck){
+                    let tempRack = [...rack];
+                    tempRack.splice(i, 1);
+                    let tempNode = dawg.getNextNode(node, rack[i]);
+                    let newPartialWord = rack[i] + partialWord;
+                    let otherWords = await leftPart(newPartialWord, tempNode, limit-1, anchor, tempRack, direction, board, cross); 
+                }
+                
+                //a.concat(otherWords);
             }
-
-            else{
-                //console.log(line);
-                line.split('').map(mapWord(line));
-                //insertingIntoGaddag(line);
-                //addToWords(line);
-            }
-        
-        });
-
-        //Testing the insertion of words as a trie first
-        const insertingIntoGaddag = (word) => {
-            //this.insert(word);
-            this.insert(word);
-           
         }
-
-        const finishBuilding = () => {
-            this.finish();
-        }
-
-
-
-
     }
-     
-
-    
+    return;
 }
+
+async function legalMove(word, squarePos, direction){
+    if(word.length > longestString.word.length){
+       // console.log(direction);
+        longestString.word = word;
+        let y = squarePos.y;
+        let x = squarePos.x;
+        if(direction == "R"){
+            let start = x - word.length;
+            let end = x - 1;
+            longestString.start = start;
+            longestString.end = end;
+            longestString.y = y;
+            longestString.x = x;
+            longestString.direction = direction;
+        }
+        else if(direction == "Col"){
+            let start = y - word.length;
+            let end = y - 1;
+            longestString.start = start;
+            longestString.end = end;
+            longestString.y = y;
+            longestString.x = x;
+            longestString.direction = direction;
+        }
+      
+        return longestString;
+    }
+    return "";
+}
+async function extendRight(partialWord, node, square, rack, direction, first = false, currentBoard){
+    let legalMoves = [];
+    //console.log("Y", square.y);
+    //console.log("X", square.x);
+   
+    if(currentBoard[square.y][square.x] == "*"){
+        //console.log("square is blabks");
+        //console.log(node);
+        if(dawg.find(partialWord) && first == false){
+            //console.log("Valid word",partialWord);
+            let c = await legalMove(partialWord, square, direction);
+            if(c !== ""){
+                //console.log("Word is in");
+                legalMoves.push(c);
+            }
+        }
+        //console.log(partialWord);
+        //console.log(rack.length);
+        // for (let index = 0; index < rack.length; index++) {
+        //     console.log("hi"); 
+        // }
+        for (let index = 0; index < rack.length; index++) { 
+            let checkNode = dawg.checkIfNodeExists(node, rack[index]);
+            //console.log(node);
+            if(checkNode == 1){
+                //console.log("Pasted the check");
+                //compute the cross check here
+                //let crosscheck = await crossCheck(square, rack[index]);
+                let crossCheck;
+                if(direction == "R"){
+                    //console.log("CHECKING CROSS CHECK");
+                    crossCheck = await CrossCheck.rowCrossChecks(square, rack[index], currentBoard, dawg);
+                }
+                else{
+                    //console.log("CHECKING CROSS CHECK");
+                    crossCheck = await CrossCheck.columnCrossChecks(square, rack[index], currentBoard, dawg);
+                } 
+                if(crossCheck){
+                    //console.log("Pasted the check 2");
+                    let tempRack = [...rack];
+                    tempRack.splice(index, 1);
+                    let tempNode = dawg.getNextNode(node, rack[index]);
+                    let newPartialWord = partialWord + rack[index];
+                    let nextSquare = {
+                        x: 0,
+                        y: 0
+                    };
+                    if(direction == "R"){
+                        if(square.x !== 14){
+                            nextSquare.x = square.x + 1;
+                        }
+                        else{
+                            return;
+                        }
+                        nextSquare.y = square.y;
+                    }
+                    if(direction == "Col"){
+                        nextSquare.x = square.x;
+                        if(square.y !== 14){
+                            nextSquare.y = square.y + 1;
+                        }
+                        else{
+                            return;
+                        }
+                        
+                    }
+                    
+                    let eR = await extendRight(newPartialWord, tempNode, nextSquare, tempRack, direction, false, currentBoard);
+                    //legalMoves.concat(eR);
+                }
+            }
+        }
+    }
+    else{
+        let currentSquareLetter = currentBoard[square.y][square.x];
+        let check = dawg.checkIfNodeExists(node, currentSquareLetter);
+        if(check == 1){
+            let tempNode = dawg.getNextNode(node, currentSquareLetter);
+            let newPartialWord = partialWord + currentSquareLetter;
+            let nextSquare = {
+                x: 0,
+                y: 0
+            };
+            if(direction == "R"){
+                nextSquare.y = square.y
+                if(square.x !== 14){
+                    nextSquare.x = square.x + 1;
+                }
+                else{
+                    return;
+                }
+                
+            }
+            if(direction == "Col"){
+                nextSquare.x = square.x;
+                if(square.y !== 14){
+                    nextSquare.y = square.y + 1;
+                }
+                else{
+                    return;
+                }
+
+                
+               
+            }
+            
+            let r = await extendRight(newPartialWord, tempNode, nextSquare, rack, direction, false,currentBoard); 
+            //legalMoves.concat(r);
+        }
+    }
+    
+    return;
+}
+
+
+//Checking if the tile is a anchor
+//It is a anchor if at least one position up, down, right and left
+//is empty hence a tile can be placed
+async function isAnchor(board, x, y){
+    let anchorDirection = {
+        left: false,
+        right: false,
+        up: false,
+        down: false
+    }
+
+
+    //If x coord is 0
+    //Only check to the right of the tile on the row
+    if(x == 0){
+        if(board[y][x+1] == "*"){
+            anchorDirection.right = true;
+        }  
+    }
+
+    //If x coord is 14
+    //Only check to the left of the tile on the row
+    else if(x == 14){
+        if(board[y][x-1] == "*"){
+            anchorDirection.left = true;
+        }
+    }
+
+    //Otherwise check both left and right
+    else{
+        if(board[y][x+1] == "*"){
+            anchorDirection.right = true;
+        }
+        if(board[y][x-1] == "*"){
+            anchorDirection.left = true;
+        }
+    }
+
+    //If y coord is 0
+    //Only check to the bottom of the tile in the column
+    if(y == 0){
+        if(board[y+1][x] == "*"){
+            anchorDirection.down = true;
+        }
+    }
+
+    //If y coord is 14
+    //Only check to the top of the tile in the column
+    if(y == 14){
+        if(board[y-1][x] == "*"){
+            anchorDirection.up = true;
+        }
+    }
+
+    //Otherwise
+    //Check above and below the tile
+    else{
+        if(board[y+1][x] == "*"){
+            anchorDirection.down = true;
+        }
+        if(board[y-1][x] == "*"){
+            anchorDirection.up = true;
+        }
+    }
+    return anchorDirection;
+}
+
+
+
 
 
 
