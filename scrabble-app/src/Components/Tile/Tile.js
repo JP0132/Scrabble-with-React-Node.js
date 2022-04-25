@@ -5,7 +5,8 @@ import { useDrag, useDrop } from 'react-dnd';
 
 
 const Tile = ({ letter, id, index}) => {
-    //console.log("Square letter", letter);
+    let currentStore = storeSlicer.getState();
+    let tilebag = currentStore.tilebag.value;
     const [{ isDragging }, drag] =  useDrag(() => ({
         type:  "tile",
         item: {letterValue: letter, id: id, index: index},
@@ -22,8 +23,8 @@ const Tile = ({ letter, id, index}) => {
     //const tileCursor = isDragging ? "move" : "pointer";
 
     return(
-        <div key={id} className='tile' ref={drag} style={{opacity: isDragging ? '0' : '1' , cursor: isDragging ? "all-scroll" : "pointer"}}>
-            <span className='tileLetter'>{letter}<span className='tileNum'>{LetterData[letter].points}</span></span>
+        <div key={id} className='tile' ref={drag} style={{opacity: isDragging ? 0 : 1 , cursor: isDragging ? "all-scroll" : "pointer"}}>
+            <span className='tileLetter'>{letter}<span className='tileNum'>{tilebag[letter].points}</span></span>
         </div>
     )
 
