@@ -1,25 +1,185 @@
-.game {
-  text-align: center;
+/* .toprow{
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+} */
+
+.toprow{
   display: grid;
+  grid-template-columns: auto auto auto auto;
+  padding: 10px;
+
+}
+.game{
+  margin:0 auto;
+  text-align: center;
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  row-gap: 20px;
+} 
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.right-content{
+  float: right;
+  width: 20%;
+  min-height: 100vh;
+}
+.btnCon{
+  display:flex;
+  flex-direction: column;
+  gap: 30px 0px;
+}
+
+.scoreboard{
+  height: 200px;
+  width: 300px;
+  background-color: rgb(188, 131, 241);
+  margin: 5px  5px  5px  5px;
 }
 
 .centre{
   display: grid;
   place-content: center;
   row-gap: 20px;
+  height: 100%;
+}
+
+.row{
+  width: 700px;
+  height: 80px;
+  padding: 10px;
+  background-color: #4fa66f;
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+}
+
+.rackBtnCon{
+  box-sizing: border-box;
+  height: 100%;
+}
+
+#text{
+  color: white;
+  font-size: 50px;
+  font-weight: bolder;
+}
+
+.header{
+  padding: 10px 10px 10px 10px;
+  text-align: center;
+  background: #1abc9c;
+  color: white;
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+
+
+
+
+
+
+/* .game{
+  text-align: center;
+  display: grid;
+  background-color: rgb(248, 217, 176);
+  grid-gap: 5px;
+  grid-auto-flow: column;
+  position: relative;
+  grid-template-columns: 100px auto auto;
+} 
+
+.grid-container{
+  text-align: center;
+  display: grid;
+  min-height: 100vh;
+  background-color: rgb(248, 217, 176);
+  grid-auto-flow: column;
+  position: relative;
+  grid-template-columns: auto auto auto;
+}
+
+.header{
+  padding: 10px 10px 10px 10px;
+  text-align: center;
+  background: #1abc9c;
+  color: white;
+  font-size: 20px;
+}
+
+@media (min-width: 700px) {
+.content{
+  
+}
+.centre{
+  display: grid;
+  place-content: center;
+  row-gap: 20px;
+  height: 100%;
 }
 
 .row{
   display: flex;
   flex-direction: row;
   box-sizing: border-box;
- 
 }
 
 .rackBtnCon{
   box-sizing: border-box;
   height: 100%;
- 
 }
 
+#con{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -50px;
+  margin-left: -50px;
+  width: 200px;
+  height: 200px;
+  text-align: center;
+}
 
+#text{
+  color: white;
+  font-size: 50px;
+  font-weight: bolder;
+}
+
+.left-content{
+  float: left;
+  height: 100%;
+  
+  padding: 20px;
+  display: grid;
+  place-content: center;
+  row-gap: 20px;
+  height: 100%;
+}
+.right-content{
+  float: right;
+  display: grid;
+  place-content: center;
+  row-gap: 20px;
+  height: 100%;
+}
+.btn-con{
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+}
+
+}
+
+*/
