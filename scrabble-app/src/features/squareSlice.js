@@ -30,13 +30,13 @@ export const squareSlice = createSlice({
         },
         removeFromSquare: (state, action) => {
             state.value.tilePositions.splice(action.payload, 1);
-           
-            
-
+        },
+        resetPos: (state, action) => {
+            state.value.tilePositions = [];
         }
     }
 })
 
-export const { addTile, updateTilePosition, removeFromSquare } = squareSlice.actions;
+export const { addTile, updateTilePosition, removeFromSquare, resetPos } = squareSlice.actions;
 
 export default squareSlice.reducer;
