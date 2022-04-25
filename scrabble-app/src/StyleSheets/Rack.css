@@ -1,9 +1,25 @@
+
 .rack{
-    width: 500px;
+    width: 700px;
     height: 80px;
     padding: 10px;
     background-color: #4fa66f;
     display: flex;
     flex-direction: row;
-    box-sizing: border-box;
+}
+
+.rackPlace{
+    width: 500px;
+    background-color: #153a22;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.btnCon{
+    margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
