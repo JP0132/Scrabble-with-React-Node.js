@@ -19,7 +19,8 @@ const initialState = {
             ["*","*","*","*","*","*","*","*","*","*","*","*","*","*","*"],
             ["*","*","*","*","*","*","*","*","*","*","*","*","*","*","*"],
             ["*","*","*","*","*","*","*","*","*","*","*","*","*","*","*"]
-        ]
+        ],
+        blanks: []
         
     }
 }
@@ -31,13 +32,16 @@ export const boardSlice = createSlice({
         updateBoard: (state, action) => {
             //console.log(action.payload);
             state.value.currentBoard[action.payload.y][action.payload.x] = action.payload.letter;
-            
         },
+
+        updateBlanks: (state, action)=> {
+            state.value.blanks.push(action.payload);
+        }
           
     }
 });
 
-export const {updateBoard} = boardSlice.actions;
+export const {updateBoard, updateBlanks} = boardSlice.actions;
 
 export default boardSlice.reducer;
 /*
