@@ -26,7 +26,7 @@ exports.validateMove = (req, res) => {
         dawg = newD;
 
         validateWord(req.body.positions, board).then(d =>{
-            console.log(dawg.find("FOR"));
+            //console.log(dawg.find("FOR"));
             res.json({
                 "pass": d,
                 "sent":"Sending Data"
@@ -67,6 +67,14 @@ async function validateWord(positions, copyBoard){
     //Getting the positions and direction
     //Copy of the board so it can be manipulated
 
+    let wordBeingPlayed = {
+        word: "",
+        start:0,
+        end:0,
+        blanks:[]
+
+    };
+
     //Getting the actual positions
     let pos = positions.pos;
     //Will store the word
@@ -97,6 +105,10 @@ async function validateWord(positions, copyBoard){
 
             //While loop to keep searching from the first tile down to an empty space
             while(found){
+                if(y > 14){
+                    found = false;
+                    break;
+                }
                if(copyBoard[y][x] !== "*"){
                    word = word + copyBoard[y][x];
                    y += 1;
@@ -113,6 +125,10 @@ async function validateWord(positions, copyBoard){
             let x = firstTilePlaced.x;
             let currentY = firstTilePlaced.y;
             while(up){
+                if(currentY < 0){
+                    up = false;
+                    break;
+                }
                 if(copyBoard[currentY][x] !== "*"){
                     word = copyBoard[currentY][x] + word;
                     currentY = currentY - 1;
@@ -132,6 +148,10 @@ async function validateWord(positions, copyBoard){
             let x = firstTilePlaced.x;
             let currentY = firstTilePlaced.y-1;
             while(up){
+                if(currentY < 0){
+                    up = false;
+                    break;
+                }
                 if(copyBoard[currentY][x] !== "*"){
                     word = copyBoard[currentY][x] + word;
                     currentY = currentY - 1;
@@ -145,6 +165,10 @@ async function validateWord(positions, copyBoard){
             let down = true;
             let yDown = firstTilePlaced.y;
             while(down){
+                if(yDown > 14){
+                    down = false;
+                    break;
+                }
                 if(copyBoard[yDown][x] !== "*"){
                     word = word + copyBoard[yDown][x];
                     yDown += 1;
@@ -185,6 +209,10 @@ async function validateWord(positions, copyBoard){
             let x = firstTilePlaced.x;
             let y = firstTilePlaced.y;
             while(found){
+                if(x > 14){
+                    found = false;
+                    break;
+                }
                if(copyBoard[y][x] !== "*"){
                    word = word + copyBoard[y][x];
                    x += 1;
@@ -200,6 +228,10 @@ async function validateWord(positions, copyBoard){
             let y = firstTilePlaced.y;
             let currentX = firstTilePlaced.x;
             while(left){
+                if(currentX < 0){
+                    left = false;
+                    break;
+                }
                 if(copyBoard[y][currentX] !== "*" || currentX  == 0){
                     word = copyBoard[y][currentX] + word;
                     currentX = currentX - 1;
@@ -217,6 +249,10 @@ async function validateWord(positions, copyBoard){
             let y = firstTilePlaced.y;
             let currentX = firstTilePlaced.x-1;
             while(left){
+                if(currentX < 0){
+                    left = false;
+                    break;
+                }
                 if(copyBoard[y][currentX] !== "*" || currentX  == 0){
                     word = copyBoard[y][currentX] + word;
                     currentX = currentX - 1;
@@ -229,6 +265,10 @@ async function validateWord(positions, copyBoard){
             let right = true;
             let xDown = firstTilePlaced.x;
             while(right){
+                if(xDown > 14){
+                    left = false;
+                    break;
+                }
                 if(copyBoard[y][xDown] !== "*" || xDown == 14){
                     word = word + copyBoard[y][xDown];
                     xDown += 1;
@@ -237,8 +277,8 @@ async function validateWord(positions, copyBoard){
                     xDown = false;
                     break;
                 }
+            
             }
-
         }
     }
 

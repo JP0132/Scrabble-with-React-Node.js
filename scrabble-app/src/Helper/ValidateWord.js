@@ -13,6 +13,10 @@ export async function ValidateWord(){
     //Current Turn number
     let turnNumber = currentStore.game.value.turnNumber;
 
+    if(pos.length == 0){
+        return false;
+    }
+
     //The turn number is 1, then a tile must be touching the center tile
     if(turnNumber == 1){
         console.log("Turn number is 1")

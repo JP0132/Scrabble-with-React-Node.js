@@ -1,4 +1,11 @@
 module.exports = {
+    crossCheck: async function(anchor, letter, board, dawg){
+        let x = anchor.x;
+        let y = anchor.y;
+        var word = letter;
+    },
+
+
     rowCrossChecks: async function(anchor, letter, board, dawg){
         //console.log("HERE");
         let x = anchor.x;
@@ -7,6 +14,9 @@ module.exports = {
         const getColumn = (arr, n) => arr.map(x => x[n]);
 
         if(y == 0 || board[y-1][x] == "*"){
+            if(y == 14){
+                return true;
+            }
             if(board[y+1][x] !== "*"){
                 let currentY = y+1;
                 let col = getColumn(board, x);
@@ -19,10 +29,11 @@ module.exports = {
                         break;
                     }
                 }
-                console.log("to right ", word)
+                //console.log("to right ", word);
                 let check = dawg.find(word);
+                //console.log(check);
                 if(check == 0){
-                    return false
+                    return false;
                 }
                 else if(!check){
                     return false;
@@ -50,6 +61,7 @@ module.exports = {
                 }
                 console.log("to left ", word)
                 let check = dawg.find(word);
+                console.log(check);
                 if(check == 0){
                     return false
                 }
@@ -88,8 +100,9 @@ module.exports = {
                 }
             }
 
-            console.log("Both ", word);
+            //console.log("Both ", word);
             let check = dawg.find(word);
+            //console.log(check);
             if(check == 0){
                 return false
             }
@@ -105,6 +118,9 @@ module.exports = {
         let y = anchor.y;
         var word = letter;
         if(x == 0 || board[y][x-1] == "*"){
+            if(x == 14){
+                return true;
+            }
             if(board[y][x+1] !== "*"){
                 let currentX = x+1;
                 let row = board[y];
@@ -117,10 +133,11 @@ module.exports = {
                         break;
                     }
                 }
-                console.log("down Col ", word);
+                //console.log("down Col ", word);
                 let check = dawg.find(word);
+                //console.log(check);
                 if(check == 0){
-                    return false
+                    return false;
                 }
                 else if(!check){
                     return false;
@@ -150,6 +167,7 @@ module.exports = {
                 }
                 console.log("up col ", word);
                 let check = dawg.find(word);
+                console.log(check);
                 if(check == 0){
                     return false
                 }
@@ -188,8 +206,9 @@ module.exports = {
                     break;
                 }
             }
-            console.log("Both Col ", word);
+            //console.log("Both Col ", word);
             let check = dawg.find(word);
+            //console.log(check);
             if(check == 0){
                 return false
             }
