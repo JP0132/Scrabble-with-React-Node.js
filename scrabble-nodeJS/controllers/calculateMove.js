@@ -1,5 +1,6 @@
 const Dawg = require('../helpers/dawg.js');
 const CrossCheck = require('../helpers/CrossCheck.js');
+const Scorer = require('../helpers/Scorer.js');
 var fs = require('fs');
 
 var dawg;
@@ -9,13 +10,15 @@ var longestString = {
     y: 0,
     start:0,
     end: 0,
-    direction: ""
+    direction: "",
+    blanks: []
 };
 
 exports.calculateMove = (req, res) => {
     console.log("Move Generation");
     let rack = req.body.rack;
     let board = req.body.board;
+    let blanksOnBoard = req.body.blanks;
     console.log("Computer rack that passed", rack);
     console.log("Board passed", req.body.board);
     dawg = new Dawg();
@@ -40,20 +43,33 @@ exports.calculateMove = (req, res) => {
         searchBoard(board, rack).then(d =>{
             //console.log("Data returend by search board", d);
             console.log(longestString);
-            res.json({
-                "letters": longestString,
-                "sent":"Sending Data"
+            getScore(board, blanksOnBoard).then(score => {
+                res.json({
+                    "letters": longestString,
+                    "sent":"Sending Data",
+                    "score": score
+                });
+    
+                longestString = {
+                    word:"",
+                    x: 0,
+                    y: 0,
+                    start:0,
+                    end: 0,
+                    direction: "",
+                    blanks: []
+                };
+
             });
-            longestString = {
-                word:"",
-                x: 0,
-                y: 0,
-                start:0,
-                end: 0,
-                direction: ""
-            };
+           
         });
     });
+
+}
+
+async function getScore(board, blanksOnBoard){
+    let score = await Scorer.scorer(longestString, board, blanksOnBoard);
+    return score;
 
 }
 async function createDawg(){
@@ -96,6 +112,7 @@ async function getAlreadyPlacedTilesRow(left, right, up, down, y, x, rack, board
 
     let foundWords = [];
     let currentLetters = "";
+    var blanks = [];
 
     //If the left of the anchor is empty
     if(left){
@@ -106,7 +123,7 @@ async function getAlreadyPlacedTilesRow(left, right, up, down, y, x, rack, board
             }
             freeSpacesLeft += 1;
         }
-
+      
         let anchor = {
             x: x,
             y: y
@@ -116,8 +133,18 @@ async function getAlreadyPlacedTilesRow(left, right, up, down, y, x, rack, board
             x: x-1,
             y: y
         };
-        let found = await leftPart("", dawg.getRootNode(), freeSpacesLeft, anchor, rack,"R", board, cross);
-        foundWords.push(found);
+
+        if(freeSpacesLeft !== 1){
+            let found = await leftPart("",blanks, dawg.getRootNode(), freeSpacesLeft, anchor, rack,"R", board, cross);
+            foundWords.push(found);
+        }
+        else if(freeSpacesLeft == 1 && x == 0){
+            let found = await leftPart("", blanks,dawg.getRootNode(), freeSpacesLeft, anchor, rack,"R", board, cross);
+            foundWords.push(found);
+        }
+
+        //let found = await leftPart("", dawg.getRootNode(), freeSpacesLeft, anchor, rack,"R", board, cross);
+       
         //console.log("Anchor created", anchor);
         // if(freeSpacesLeft !== 1 && x !== 1){
         //     let found = await leftPart("", dawg.getRootNode(), freeSpacesLeft, anchor, rack,"R", board, cross);
@@ -150,7 +177,7 @@ async function getAlreadyPlacedTilesRow(left, right, up, down, y, x, rack, board
         }
         let tempNode = dawg.getNode(currentLetters);
         console.log("LETTER IN RRGJ", currentLetters, x);
-        let found = await extendRight(currentLetters, tempNode, anchor, rack,"R", true, board);
+        let found = await extendRight(currentLetters, blanks,tempNode, anchor, rack,"R", true, board);
         currentLetters = "";
         foundWords.push(found);
         //extendRight(currentLetters, node, square, rack); 
@@ -165,6 +192,8 @@ async function getAlreadyPlacedTilesRow(left, right, up, down, y, x, rack, board
             }
             freeSpacesUp += 1;
         }
+
+       
        
 
         let anchor = {
@@ -177,8 +206,18 @@ async function getAlreadyPlacedTilesRow(left, right, up, down, y, x, rack, board
             y: y-1,
         }
 
-        let found = await leftPart("", dawg.getRootNode(), freeSpacesUp, anchor, rack, "Col",board, cross);
-        foundWords.push(found);
+        if(freeSpacesLeft > 1){
+            let found = await leftPart("",blanks, dawg.getRootNode(), freeSpacesLeft, anchor, rack,"C", board, cross);
+            foundWords.push(found);
+        }
+
+        else if(freeSpacesLeft == 1 && y == 0){
+            let found = await leftPart("",blanks, dawg.getRootNode(), freeSpacesLeft, anchor, rack,"C", board, cross);
+            foundWords.push(found);
+        }
+      
+        // let found = await leftPart("", dawg.getRootNode(), freeSpacesUp, anchor, rack, "Col",board, cross);
+        // foundWords.push(found);
 
         // if(freeSpacesUp !== 1 && y !== 1){
            
@@ -213,9 +252,11 @@ async function getAlreadyPlacedTilesRow(left, right, up, down, y, x, rack, board
             y: y+1
         };
 
+       
+
         let tempNode = dawg.getNode(currentLetters);
         console.log("LETTER IN RRGJ", currentLetters, y);
-        let found = await extendRight(currentLetters, tempNode, anchor, rack,"Col",true, board);
+        let found = await extendRight(currentLetters, blanks, tempNode, anchor, rack,"C",true, board);
         currentLetters = "";
         foundWords.push(found);
         //extendRight(currentLetters, node, square, rack); 
@@ -224,50 +265,125 @@ async function getAlreadyPlacedTilesRow(left, right, up, down, y, x, rack, board
     return;
 }
 
-async function leftPart(partialWord, node, limit, anchor, rack, direction, board, cross){
-    console.log("Anchor", anchor);
+async function leftPart(partialWord, blanks, node, limit, anchor, rack, direction, board, cross){
+    //console.log("Anchor", anchor);
     if(partialWord !== ""){
-        let validWords = await extendRight(partialWord, node, anchor, rack, direction,false, board);
+        let validWords = await extendRight(partialWord, blanks, node, anchor, rack, direction,false, board);
     }
     
     let a = [];
     //a.concat(validWords);
     if(limit > 0){
+        if(limit == 1 && (anchor.y !== 1 || anchor.x !== 1)){
+            return;
+        }
         //console.log("Limit is not zero");
         for(let i = 0; i < rack.length; i++){
-            let check = dawg.checkIfNodeExists(node, rack[i]);
-            if(check == 1){
-                let crossCheck;
-                if(direction == "R"){
-                    //console.log("CHECKING CROSS CHECK");
-                    crossCheck = await CrossCheck.rowCrossChecks(cross, rack[i], board, dawg);
-                    if(cross.x !== 0){
-                        cross.x = cross.x - 1;
+            
+            if(rack[i] == "?"){
+                console.log("Blank");
+                let ascii = 65;
+                var char;
+                for(let j = 0; j < 26; j++){
+                    char = String.fromCharCode(ascii + j);
+                    let check = dawg.checkIfNodeExists(node, char);
+                    if(check == 1){
+                        console.log(char);
+                        let crossCheck;
+                        if(direction == "R"){
+                            //console.log("CHECKING CROSS CHECK");
+                            // console.log("Left Cross Check R");
+                            // console.log("Left Anchor", anchor);
+                            // console.log("Left Cross", cross);
+                            crossCheck = await CrossCheck.rowCrossChecks(cross, char, board, dawg);
+                    
+                        }
+
+                        else{
+                            //console.log("CHECKING CROSS CHECK");
+                            // console.log("Left Cross Check C");
+                            // console.log("Left Anchor", anchor);
+                            // console.log("Left Cross", cross);
+                            crossCheck = await CrossCheck.columnCrossChecks(cross, char, board, dawg);
+                        
+                        } 
+                        if(crossCheck){
+                            let tempRack = [...rack];
+                            tempRack.splice(i, 1);
+                            let tempNode = dawg.getNextNode(node, char);
+                            let newPartialWord = char + partialWord;
+                            let newCross = {
+                                x: cross.x,
+                                y: cross.y
+                            };
+                            let blankTile = {
+                                x: cross.x,
+                                y: cross.y,
+                                letter: char
+                            };
+                            let tempBlanks = [...blanks];
+                            tempBlanks.push(blankTile);
+                            if(direction == "C" && cross.y !== 0){
+                                newCross.y = newCross.y - 1;
+                            }
+                            else if(direction == "R" && cross.x !== 0){
+                                newCross.x = newCross.x - 1;
+                            }
+                            let otherWords = await leftPart(newPartialWord, tempBlanks, tempNode, limit-1, anchor, tempRack, direction, board, newCross); 
+                        }
+                        
+                        //a.concat(otherWords);
                     }
                 }
-                else{
-                    //console.log("CHECKING CROSS CHECK");
-                    crossCheck = await CrossCheck.columnCrossChecks(cross, rack[i], board, dawg);
-                    if(cross.y !== 0){
-                        cross.y = cross.y - 1;
-                    }
-                } 
-                if(crossCheck){
-                    let tempRack = [...rack];
-                    tempRack.splice(i, 1);
-                    let tempNode = dawg.getNextNode(node, rack[i]);
-                    let newPartialWord = rack[i] + partialWord;
-                    let otherWords = await leftPart(newPartialWord, tempNode, limit-1, anchor, tempRack, direction, board, cross); 
-                }
-                
-                //a.concat(otherWords);
             }
+            else{
+                let check = dawg.checkIfNodeExists(node, rack[i]);
+                if(check == 1){
+                    let crossCheck;
+                    if(direction == "R"){
+                        //console.log("CHECKING CROSS CHECK");
+                        // console.log("Left Cross Check R");
+                        // console.log("Left Anchor", anchor);
+                        // console.log("Left Cross", cross);
+                        crossCheck = await CrossCheck.rowCrossChecks(cross, rack[i], board, dawg);
+                       
+                    }
+                    else{
+                        //console.log("CHECKING CROSS CHECK");
+                        // console.log("Left Cross Check C");
+                        // console.log("Left Anchor", anchor);
+                        // console.log("Left Cross", cross);
+                        crossCheck = await CrossCheck.columnCrossChecks(cross, rack[i], board, dawg);
+                       
+                    } 
+                    if(crossCheck){
+                        let tempRack = [...rack];
+                        tempRack.splice(i, 1);
+                        let tempNode = dawg.getNextNode(node, rack[i]);
+                        let newPartialWord = rack[i] + partialWord;
+                        let newCross = {
+                            x: cross.x,
+                            y: cross.y
+                        }
+                        if(direction == "C" && cross.y !== 0){
+                            newCross.y = newCross.y - 1;
+                        }
+                        else if(direction == "R" && cross.x !== 0){
+                            newCross.x = newCross.x - 1;
+                        }
+                        let otherWords = await leftPart(newPartialWord, blanks, tempNode, limit-1, anchor, tempRack, direction, board, newCross); 
+                    } 
+                    //a.concat(otherWords);
+                }
+
+            }
+           
         }
     }
     return;
 }
 
-async function legalMove(word, squarePos, direction){
+async function legalMove(word, squarePos, direction, blanksTiles){
     if(word.length > longestString.word.length){
        // console.log(direction);
         longestString.word = word;
@@ -281,8 +397,11 @@ async function legalMove(word, squarePos, direction){
             longestString.y = y;
             longestString.x = x;
             longestString.direction = direction;
+            if(blanksTiles.length !== 0){
+                longestString.blanks = blanksTiles;
+            }
         }
-        else if(direction == "Col"){
+        else if(direction == "C"){
             let start = y - word.length;
             let end = y - 1;
             longestString.start = start;
@@ -290,13 +409,18 @@ async function legalMove(word, squarePos, direction){
             longestString.y = y;
             longestString.x = x;
             longestString.direction = direction;
+            if(blanksTiles.length !== 0){
+                longestString.blanks = blanksTiles;
+            }
         }
       
         return longestString;
     }
     return "";
 }
-async function extendRight(partialWord, node, square, rack, direction, first = false, currentBoard){
+
+
+async function extendRight(partialWord,blanks, node, square, rack, direction, first = false, currentBoard){
     let legalMoves = [];
     //console.log("Y", square.y);
     //console.log("X", square.x);
@@ -306,7 +430,7 @@ async function extendRight(partialWord, node, square, rack, direction, first = f
         //console.log(node);
         if(dawg.find(partialWord) && first == false){
             //console.log("Valid word",partialWord);
-            let c = await legalMove(partialWord, square, direction);
+            let c = await legalMove(partialWord, square, direction, blanks);
             if(c !== ""){
                 //console.log("Word is in");
                 legalMoves.push(c);
@@ -318,55 +442,122 @@ async function extendRight(partialWord, node, square, rack, direction, first = f
         //     console.log("hi"); 
         // }
         for (let index = 0; index < rack.length; index++) { 
-            let checkNode = dawg.checkIfNodeExists(node, rack[index]);
-            //console.log(node);
-            if(checkNode == 1){
-                //console.log("Pasted the check");
-                //compute the cross check here
-                //let crosscheck = await crossCheck(square, rack[index]);
-                let crossCheck;
-                if(direction == "R"){
-                    //console.log("CHECKING CROSS CHECK");
-                    crossCheck = await CrossCheck.rowCrossChecks(square, rack[index], currentBoard, dawg);
-                }
-                else{
-                    //console.log("CHECKING CROSS CHECK");
-                    crossCheck = await CrossCheck.columnCrossChecks(square, rack[index], currentBoard, dawg);
-                } 
-                if(crossCheck){
-                    //console.log("Pasted the check 2");
-                    let tempRack = [...rack];
-                    tempRack.splice(index, 1);
-                    let tempNode = dawg.getNextNode(node, rack[index]);
-                    let newPartialWord = partialWord + rack[index];
-                    let nextSquare = {
-                        x: 0,
-                        y: 0
-                    };
-                    if(direction == "R"){
-                        if(square.x !== 14){
-                            nextSquare.x = square.x + 1;
+            if(rack[index] == "?"){
+                let ascii = 65;
+                var char;
+                for(let i = 0; i < 26; i++){
+                    char = String.fromCharCode(ascii + i);
+            
+                    let checkNode = dawg.checkIfNodeExists(node, char);
+                    //console.log(node);
+                    if(checkNode == 1){
+                        //console.log("Pasted the check");
+                        //compute the cross check here
+                        //let crosscheck = await crossCheck(square, rack[index]);
+                        let crossCheck;
+                        if(direction == "R"){
+                            //console.log("CHECKING CROSS CHECK");
+                            crossCheck = await CrossCheck.rowCrossChecks(square, char, currentBoard, dawg);
                         }
                         else{
-                            return;
+                            //console.log("CHECKING CROSS CHECK");
+                            crossCheck = await CrossCheck.columnCrossChecks(square, char, currentBoard, dawg);
+                        } 
+                        if(crossCheck){
+                            //console.log("Pasted the check 2");
+                            let tempRack = [...rack];
+                            tempRack.splice(index, 1);
+                            let tempNode = dawg.getNextNode(node, char);
+                            let blankTile = {
+                                x: square.x,
+                                y: square.y,
+                                letter: char
+                            };
+                            let tempBlank = [...blanks];
+                            tempBlank.push(blankTile);
+                            let newPartialWord = partialWord + char;
+                            let nextSquare = {
+                                x: 0,
+                                y: 0
+                            };
+                            if(direction == "R"){
+                                if(square.x !== 14){
+                                    nextSquare.x = square.x + 1;
+                                }
+                                else{
+                                    return;
+                                }
+                                nextSquare.y = square.y;
+                            }
+                            if(direction == "C"){
+                                nextSquare.x = square.x;
+                                if(square.y !== 14){
+                                    nextSquare.y = square.y + 1;
+                                }
+                                else{
+                                    return;
+                                }
+                                
+                            }
+                            
+                            let eR = await extendRight(newPartialWord, tempBlank, tempNode, nextSquare, tempRack, direction, false, currentBoard);
+                            //legalMoves.concat(eR);
                         }
-                        nextSquare.y = square.y;
                     }
-                    if(direction == "Col"){
-                        nextSquare.x = square.x;
-                        if(square.y !== 14){
-                            nextSquare.y = square.y + 1;
-                        }
-                        else{
-                            return;
-                        }
-                        
-                    }
-                    
-                    let eR = await extendRight(newPartialWord, tempNode, nextSquare, tempRack, direction, false, currentBoard);
-                    //legalMoves.concat(eR);
                 }
             }
+            else{
+                let checkNode = dawg.checkIfNodeExists(node, rack[index]);
+                //console.log(node);
+                if(checkNode == 1){
+                    //console.log("Pasted the check");
+                    //compute the cross check here
+                    //let crosscheck = await crossCheck(square, rack[index]);
+                    let crossCheck;
+                    if(direction == "R"){
+                        //console.log("CHECKING CROSS CHECK");
+                        crossCheck = await CrossCheck.rowCrossChecks(square, rack[index], currentBoard, dawg);
+                    }
+                    else{
+                        //console.log("CHECKING CROSS CHECK");
+                        crossCheck = await CrossCheck.columnCrossChecks(square, rack[index], currentBoard, dawg);
+                    } 
+                    if(crossCheck){
+                        //console.log("Pasted the check 2");
+                        let tempRack = [...rack];
+                        tempRack.splice(index, 1);
+                        let tempNode = dawg.getNextNode(node, rack[index]);
+                        let newPartialWord = partialWord + rack[index];
+                        let nextSquare = {
+                            x: 0,
+                            y: 0
+                        };
+                        if(direction == "R"){
+                            if(square.x !== 14){
+                                nextSquare.x = square.x + 1;
+                            }
+                            else{
+                                return;
+                            }
+                            nextSquare.y = square.y;
+                        }
+                        if(direction == "C"){
+                            nextSquare.x = square.x;
+                            if(square.y !== 14){
+                                nextSquare.y = square.y + 1;
+                            }
+                            else{
+                                return;
+                            }
+                            
+                        }
+                        
+                        let eR = await extendRight(newPartialWord,blanks, tempNode, nextSquare, tempRack, direction, false, currentBoard);
+                        //legalMoves.concat(eR);
+                    }
+                }
+            }
+           
         }
     }
     else{
@@ -389,7 +580,7 @@ async function extendRight(partialWord, node, square, rack, direction, first = f
                 }
                 
             }
-            if(direction == "Col"){
+            if(direction == "C"){
                 nextSquare.x = square.x;
                 if(square.y !== 14){
                     nextSquare.y = square.y + 1;
@@ -402,7 +593,7 @@ async function extendRight(partialWord, node, square, rack, direction, first = f
                
             }
             
-            let r = await extendRight(newPartialWord, tempNode, nextSquare, rack, direction, false,currentBoard); 
+            let r = await extendRight(newPartialWord,blanks, tempNode, nextSquare, rack, direction, false,currentBoard); 
             //legalMoves.concat(r);
         }
     }
@@ -459,7 +650,7 @@ async function isAnchor(board, x, y){
 
     //If y coord is 14
     //Only check to the top of the tile in the column
-    if(y == 14){
+    else if(y == 14){
         if(board[y-1][x] == "*"){
             anchorDirection.up = true;
         }
