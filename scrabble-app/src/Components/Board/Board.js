@@ -11,7 +11,7 @@ import BoardTile from '../Tile/BoardTile';
 function renderSquare(squareNum, y, x, tilePositions, p){
     var c;
     if(p !== "*"){
-        c = <BoardTile letter={p}/>
+        c = <BoardTile letter={p} x={x} y={y}/>
     }
     else{
         c = renderTile(x, y, tilePositions);
