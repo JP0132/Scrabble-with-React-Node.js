@@ -13,10 +13,11 @@ import TileBag from '../Components/TileBag/TileBag';
 import { addToPlayerRack, removeFromSwapRack } from "../features/rackSlice";
 import { removeFromSquare, resetPos} from "../features/squareSlice";
 import { ValidateWord } from '../Helper/ValidateWord';
-import { updateBoard } from '../features/boardSlice';
-import { hasPlayerTileDrawn, increaseTurnNumber } from '../features/gameSlice';
+import { updateBlanks, updateBoard } from '../features/boardSlice';
+import { hasPlayerTileDrawn, increaseComputerScore, increaseTurnNumber } from '../features/gameSlice';
 import { DrawTiles } from '../Components/Rack/RackHelper';
 import PopUp from '../Components/Popup.js/PopUp';
+import Scoreboard from '../Components/Scoreboard/Scoreboard';
 
 
 
@@ -33,6 +34,9 @@ const Game = () => {
 
     //Display the swap rack tray
     const [isSwap, setSwap] = useState(false);
+
+
+    const [compScore, setComputerScore] = useState(0);
 
     //Getting the current turn number
     var turnNumber = useSelector((state) => state.game.value.turnNumber);
@@ -81,6 +85,7 @@ const Game = () => {
             let currentStore = storeSlicer.getState();
             let compRack = currentStore.rack.value.computerRack;
             let b = currentStore.board.value.currentBoard;
+            let blanks = currentStore.board.value.blanks;
             console.log(compRack.length);
             if(compRack.length < 7){
                 console.log("Here");
@@ -95,7 +100,8 @@ const Game = () => {
             compRack = currentStore.rack.value.computerRack;
             var data = {
                 "rack" : compRack,
-                "board" : b
+                "board" : b,
+                "blanks" : blanks 
             };
 
             getComputerMove(data);
@@ -119,8 +125,15 @@ const Game = () => {
         }).then(data => {
                 let compMove = data.letters;
                 if(compMove.word !== ""){
+                    dispatch(increaseComputerScore(data.score));
+                    if(compMove.blanks.length !== 0){
+                        for(let i = 0; i < compMove.blanks.length; i++ ){
+                            dispatch(updateBlanks(compMove.blanks[i]));
+                        }
+                    }
                     let currentStore = storeSlicer.getState();
                     let currentBoard = currentStore.board.value.currentBoard;
+                  
 
                     if(compMove.direction == "R"){
                         let row = compMove.y;
@@ -136,12 +149,25 @@ const Game = () => {
                                     y: row,
                                     letter: letter
                                 };
-                                dispatch(removeTileFromComputerRack(letter));
+                                let blankFound = false;
+                                if(compMove.blanks.length !== 0){
+                                    compMove.blanks.forEach((element, index, array) => {
+                                        if(element.x == currentX && element.y == row){
+                                            dispatch(removeTileFromComputerRack("?"));
+                                        }
+                                    });
+                                }
+                                else{
+                                    dispatch(removeTileFromComputerRack(letter));
+                                }
+                                
                                 dispatch(updateBoard(newTile));
                                 currentX += 1;
+
                             } 
                         }
                     }
+                    
                     else{
                         let sq = compMove.x;
                         let currentY = compMove.start;
@@ -156,7 +182,17 @@ const Game = () => {
                                     y: currentY,
                                     letter: letter
                                 };
-                                dispatch(removeTileFromComputerRack(letter));
+                                if(compMove.blanks.length !== 0){
+                                    compMove.blanks.forEach((element, index, array) => {
+                                        if(element.x == sq && element.y == currentY){
+                                            dispatch(removeTileFromComputerRack("?"));
+                                        }
+                                    });
+                                }
+                                else{
+                                    dispatch(removeTileFromComputerRack(letter));
+                                }
+                                //dispatch(removeTileFromComputerRack(letter));
                                 dispatch(updateBoard(newTile));
                                 currentY += 1;
                             }
@@ -218,18 +254,14 @@ const Game = () => {
             <h1 className='title'>AIECHO SCRABBLE</h1>
         </div>
         <div className="toprow">
-            <div className='scoreboard'>
-                Scoreboard
-            </div>
+            <Scoreboard  key="scoreBoardComputer" user={"computerScore"}/>
             <div className='btnCon'>
                 <GameBtn key="shuffleBtn" handleAction={handleRackShuffle} text={"Shuffle"}/>
                 <GameBtn key="swapBtn" handleAction={handleRackSwap} text={"Swap"}/>
                 <GameBtn key="clearBtn" handleAction={handleClearBoard} text={"Clear"}/>
             </div>
             
-            <div className='scoreboard'>
-                Scoreboard
-            </div>
+            <Scoreboard  key="scoreBoardUser" user={"playerScore"}/>
             <TileBag key="tilebag" tn={turnNumber}/>
             
 
