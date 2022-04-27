@@ -20,7 +20,9 @@ const initialState = {
             ["*","*","*","*","*","*","*","*","*","*","*","*","*","*","*"],
             ["*","*","*","*","*","*","*","*","*","*","*","*","*","*","*"]
         ],
-        blanks: []
+        blanks: [],
+        blankValue:"",
+        currentBlank: false
         
     }
 }
@@ -36,12 +38,26 @@ export const boardSlice = createSlice({
 
         updateBlanks: (state, action)=> {
             state.value.blanks.push(action.payload);
-        }
+        },
+
+        setBlankValue: (state, action) => {
+            state.value.blankValue = action.payload;
+        },
+
+        removeBlanks: (state, action) => {
+            state.value.blanks.splice(action.payload, 1);
+
+        },
+        changeToBlank:  (state, action) => {
+            state.value.currentBlank = action.payload;
+            
+
+        },
           
     }
 });
 
-export const {updateBoard, updateBlanks} = boardSlice.actions;
+export const {updateBoard, updateBlanks, setBlankValue, changeToBlank, removeBlanks } = boardSlice.actions;
 
 export default boardSlice.reducer;
 /*
