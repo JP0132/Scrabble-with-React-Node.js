@@ -18,6 +18,7 @@ import { hasPlayerTileDrawn, increaseComputerScore, increaseTurnNumber } from '.
 import { DrawTiles } from '../Components/Rack/RackHelper';
 import PopUp from '../Components/Popup.js/PopUp';
 import Scoreboard from '../Components/Scoreboard/Scoreboard';
+import BlankTile from '../Components/Tile/BlankTile';
 
 
 
@@ -34,6 +35,8 @@ const Game = () => {
 
     //Display the swap rack tray
     const [isSwap, setSwap] = useState(false);
+
+    const [isBlank, setBlank] = useState(false);
 
 
     const [compScore, setComputerScore] = useState(0);
@@ -73,7 +76,15 @@ const Game = () => {
 
     //Open the swap rack tray
     const handleRackSwap = () => {
-        setSwap(true);
+        let currentStore = storeSlicer.getState();
+        let tilebag = currentStore.tilebag.value.bag;
+        if(tilebag < 7){
+            alert("Cannot exchange tiles when less than 7 tiles remaining");
+        }
+        else{
+            setSwap(true);
+        }
+        
     }
     //Cancel the swap
     const handleCancelSwap = () => {
@@ -245,6 +256,9 @@ const Game = () => {
 
     //Displaying the game components to the user.
     //<> => Allows for React Fragments to return multiple divs
+    //{ isBlank && <BlankTile blank={blankChange}/>}
+    //<Board key="board" currentBoard={boardChange} blank={blankChange} isblank={isBlank}/>
+
     return(
         <>
         
@@ -262,13 +276,12 @@ const Game = () => {
             </div>
             
             <Scoreboard  key="scoreBoardUser" user={"playerScore"}/>
-            <TileBag key="tilebag" tn={turnNumber}/>
-            
+            <TileBag key="tilebag" tn={turnNumber}/>   
 
         </div>
         
         <div className='game noselect'>
-            <Board key="board" currentBoard={boardChange}/>
+            <Board key="board" currentBoard={boardChange} changeBlank={setBlank} ifBlank={isBlank}/>
             { isSwap &&  <Swap handleCancelSwap={handleCancelSwap}/>}  
             <Rack key="rack" handlePlayWord={handlePlayWord} tn={turnNumber}/>
         </div>

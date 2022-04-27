@@ -1,0 +1,66 @@
+.overlay {
+    opacity:0.5;
+    filter: alpha(opacity=50);
+    background-color:#000; 
+    width:100%; 
+    height:100%; 
+    z-index:10;
+    top:0; 
+    left:0; 
+    position:fixed; 
+}
+.blank{
+    position: fixed; 
+    left: 50%; 
+    top: 50%;
+    width: 300px; 
+    height: 200px;
+    margin-left: -150px; 
+    margin-top: -150px;
+    background: #3e8ad6; 
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    border-radius: 10px;
+    padding: 10px;
+    z-index: 11;
+    display: flex;
+    align-items: center;
+    flex-direction: column
+}
+.blankLabel{
+    color: white;
+    font-size: 20px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.blankInput{
+    width: 200px;
+    height: 50px;
+    font-size: 30px;
+    margin-bottom: 10px;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    
+}
+
+.blankSubmit{
+    width: 100px;
+    height: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    background-color: rgb(31, 113, 53);
+    color: white;
+    cursor: pointer;
+    
+}
+.blankSubmit:hover{
+    background-color: rgb(37, 141, 65);
+
+} 
+    
+

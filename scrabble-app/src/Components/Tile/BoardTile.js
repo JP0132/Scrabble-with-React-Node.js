@@ -30,8 +30,6 @@ const BoardTile = ({ letter, id, x, y}) => {
     if(td !== "?"){
         td = letter;
         tl = letter;
-        
-        
     }
 
     useEffect(() =>{

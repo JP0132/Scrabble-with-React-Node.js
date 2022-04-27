@@ -8,13 +8,16 @@ import { BoardCoords } from '../Square/boardMap';
 import { LetterData } from '../../JSONData/LetterData.json';
 import BoardTile from '../Tile/BoardTile';
 
-function renderSquare(squareNum, y, x, tilePositions, p){
+var setBlank;
+var isBlank;
+
+function renderSquare(squareNum, y, x, tilePositions, p, blankPositions){
     var c;
     if(p !== "*"){
         c = <BoardTile letter={p} x={x} y={y}/>
     }
     else{
-        c = renderTile(x, y, tilePositions);
+        c = renderTile(x, y, tilePositions, blankPositions);
     }
     
     var type = "B";
@@ -32,22 +35,40 @@ function renderSquare(squareNum, y, x, tilePositions, p){
     
     return(
         <div key={squareNum}>
-            <BoardSquare x={x} y={y} sqType={type} pos={tilePositions} >{c}</BoardSquare>
+            <BoardSquare x={x} y={y} sqType={type} pos={tilePositions} isBlank={setBlank} aBlank={isBlank}>{c}</BoardSquare>
         </div>
     )
 }
 
-function renderTile(x, y, tilePos){
+function renderTile(x, y, tilePos, blankPositions){
     for(let i = 0; i < tilePos.length; i++){
         let currentTile = tilePos[i];
         if(currentTile.x === x && currentTile.y === y){
+            if(blankPositions.length !== 0){
+                for(let j = 0; j < blankPositions.length; j++){
+                    let blank= blankPositions[j];
+                    if(blank.x == currentTile.x && blank.y == currentTile.y){
+                        return <Tile key={currentTile.id} letter={blank.letter} id={currentTile.id} index={currentTile.index} style={{position:'absolute'}} isBlank={true}/>;
+                    }
+                }
+                return <Tile key={currentTile.id} letter={currentTile.letter} id={currentTile.id} index={currentTile.index} style={{position:'absolute'}} isBlank={false}/>;
+            }
+            else{
+                return <Tile key={currentTile.id} letter={currentTile.letter} id={currentTile.id} index={currentTile.index} style={{position:'absolute'}} isBlank={false}/>;
+
+            }
+            
             //console.log("AM here");
-            return <Tile key={currentTile.id} letter={currentTile.letter} id={currentTile.id} index={currentTile.index} style={{position:'absolute'}}/>
+            
         }
     }
 }
 
-const Board = (props) => {
+const Board = ({changeBlank, ifBlank}) => {
+    setBlank = changeBlank;
+    isBlank = ifBlank;
+
+ 
     const boardMap = [
         ['TW','B','B','DL','B','B','B','TW','B','B','B','DL','B','B','TW'],
         ['B','DW','B','B','B','TL','B','B','B','TL','B','B','B','DW','B'],
@@ -68,6 +89,7 @@ const Board = (props) => {
 
 
     const tilePositions = useSelector((state) => state.square.value.tilePositions);
+    const blankPositions = useSelector((state) => state.board.value.blanks);
     const dispatch = useDispatch();
 
     // const [tilesOnBoard, setTilesOnBoard] = useState([]);
@@ -84,7 +106,7 @@ const Board = (props) => {
         for(let j = 0; j < 15; j++){
             sqNum += 1;
             let p = currentBoard[i][j];
-            squares.push(renderSquare(sqNum, i, j, tilePositions, p));
+            squares.push(renderSquare(sqNum, i, j, tilePositions, p, blankPositions));
         }
     }
 
