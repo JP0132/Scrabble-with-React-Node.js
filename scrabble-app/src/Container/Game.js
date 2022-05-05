@@ -25,6 +25,7 @@ import { addTileToBag, restTileBag } from '../features/tilebagSlice';
 import LastWord from '../Components/LastWord/LastWord';
 import { Link } from 'react-router-dom';
 import HomeButton from '../Components/Buttons/HomeButton';
+import { restPvPState } from '../features/pvpgameSlice';
 
 
 
@@ -459,7 +460,9 @@ const Game = () => {
         dispatch(restRackState());
         dispatch(resetGameState());
         dispatch(restTileBag());
+        dispatch(restPvPState());
         history.push('/'); 
+        window.location.reload();
     }
 
 

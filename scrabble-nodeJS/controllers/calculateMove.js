@@ -516,7 +516,6 @@ async function leftPart(partialWord, blanks, node, limit, anchor, rack, directio
 
 //Sets the best word in the object
 async function setBestWord(x, y, word, direction, blanksTiles, lettersUsed){
-    console.log("Long", bestWordToPlay);
     bestWordToPlay.word = word;
     if(direction == "R"){
         let start = x - word.length;
@@ -830,7 +829,9 @@ async function extendRight(partialWord,blanks, node, square, rack, direction, fi
             }
             //If not a blank, same process
             else{
-                console.log(square);
+                if(node == undefined){
+                    return;
+                }
                 let checkNode = dawg.checkIfNodeExists(node, rack[index]);
                 
                 if(checkNode == 1){
