@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Goldman&display=swap');
+
+
+#instructTitle{
+    text-align: center;
+    font-family: 'Goldman', cursive;
+    color: rgb(67, 217, 17);
+    background-color: rgba(0, 0, 0, 0.774);
+
+}
+.instructionContainer{
+    z-index: 12;
+    background-color: rgba(0, 0, 0, 0.774);
+    margin-left: 20%;
+    margin-right: 20%;
+    margin-top: 10px;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Goldman', cursive;
+    color: white;
+    height: 600px;
+    overflow:scroll;
+}
+.sectionTitle{
+    font-size: 40px;
+
+}
