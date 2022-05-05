@@ -10,6 +10,9 @@ export const squareSlice = createSlice({
     name: "square",
     initialState,
     reducers:{
+        resetSquareState: (state, action) => {
+            Object.assign(state, initialState);
+       },
         addTile: (state, action)=> {
             let tileToAdd = {
                 letter: action.payload.letter,
@@ -24,9 +27,6 @@ export const squareSlice = createSlice({
         updateTilePosition: (state, action) =>{
             state.value.tilePositions[action.payload.index].x = action.payload.x;
             state.value.tilePositions[action.payload.index].y = action.payload.y;
-
-
-
         },
         removeFromSquare: (state, action) => {
             state.value.tilePositions.splice(action.payload, 1);
@@ -37,6 +37,6 @@ export const squareSlice = createSlice({
     }
 })
 
-export const { addTile, updateTilePosition, removeFromSquare, resetPos } = squareSlice.actions;
+export const { resetSquareState, addTile, updateTilePosition, removeFromSquare, resetPos } = squareSlice.actions;
 
 export default squareSlice.reducer;

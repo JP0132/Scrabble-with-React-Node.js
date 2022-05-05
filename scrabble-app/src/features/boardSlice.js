@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from 'uuid';
 
+//Board slice to track board states, and blank states
 const initialState = {
     value: {
         "currentBoard": [
@@ -31,8 +32,12 @@ export const boardSlice = createSlice({
     name: "board",
     initialState,
     reducers:{
+        resetBoardState: (state, action) => {
+            Object.assign(state, initialState);
+       },
+
         updateBoard: (state, action) => {
-            //console.log(action.payload);
+            //
             state.value.currentBoard[action.payload.y][action.payload.x] = action.payload.letter;
         },
 
@@ -57,7 +62,7 @@ export const boardSlice = createSlice({
     }
 });
 
-export const {updateBoard, updateBlanks, setBlankValue, changeToBlank, removeBlanks } = boardSlice.actions;
+export const {resetBoardState, updateBoard, updateBlanks, setBlankValue, changeToBlank, removeBlanks } = boardSlice.actions;
 
 export default boardSlice.reducer;
 /*
