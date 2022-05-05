@@ -6,13 +6,19 @@
     height: 300px;
     margin-left: -200px; 
     margin-top: -150px;
-    background: #F0C000; 
+    background: #8e1ef0; 
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     -khtml-border-radius: 10px;
     border-radius: 10px;
     padding: 10px;
     z-index: 11;
+    text-align: center;
+}
+.popupMessage{
+    font-size: 50px;
+    font-weight: 600;
+    color: white;
 }
 
 .overlay {

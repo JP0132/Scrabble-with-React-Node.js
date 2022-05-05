@@ -1,10 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+
 .tileBag{
-    border: 10px double #8415ce;
-    background-color:  #ba65f3;
+    background-color:  #1b630c65;
     color: white;
     align-items: center;
     padding: 10px;
-    border-radius: 10%;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    font-family: 'Permanent Marker', cursive;
 }
 #bagText{
     font-weight: bolder;

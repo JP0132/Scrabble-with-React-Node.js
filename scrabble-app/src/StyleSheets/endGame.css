@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Koulen&display=swap');
+
+.endGameContainer{
+    position: fixed;
+    left: 50%; 
+    top: 50%;
+    margin-left: -200px; 
+    margin-top: -350px;
+    background: #287cb9; 
+    padding: 10px;
+    z-index: 11;
+    text-align: center;
+    color: white;
+}
+.winnerContainer{
+    display: flex;
+    flex-direction: column;
+    z-index: 12;
+    background: #1f810e; 
+    border: rgb(214, 168, 40) 5px solid;
+    padding: 10px;
+    font-family: 'Permanent Marker', cursive;
+}
+
+.loserContainer{
+    display: flex;
+    flex-direction: row;
+    font-family: 'Amatic SC', cursive;
+}
+
+.endGameBtn{
+    margin-top: 10px;
+    width: 200px;
+    height: 40px;
+    outline: none;
+    border: none;
+    border-radius: 56px;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0 20px; 
+    background-color:#061c2b;
+    color: white;
+    font-family: 'Koulen', cursive;
+}
+
+.endGameBtn:hover{
+    background-color:#76b4dd;
+    color: white;
+}
+
+.loserBoardRow{
+    background: rgb(128, 12, 12);
+    color: rgb(255, 255, 255);
+    border-bottom: solid 1px #999;
+}
+
+.loserBoardRow-score {
+    background:rgb(205, 14, 14);
+    font-weight: bold;
+    font-size: 25px;
+    width: 30%;
+}
+
+.loserBoardRow-name {
+    font-size: 30px;
+    text-align: left;
+}
+
+.endGameTitle{
+    font-family: 'Amatic SC', cursive;
+}
+
+.overlay {
+    opacity:0.5;
+    filter: alpha(opacity=50);
+    background-color:#000; 
+    width:100%; 
+    height:100%; 
+    z-index:10;
+    top:0; 
+    left:0; 
+    position:fixed; 
+}

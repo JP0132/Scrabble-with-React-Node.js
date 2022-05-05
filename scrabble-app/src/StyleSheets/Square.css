@@ -5,7 +5,8 @@
     text-align: center;
     font-weight: bold;
     color: #000000;
-    
+    font-size: 25px;
+    text-align: center;
     box-sizing: border-box;
 }
 
@@ -37,3 +38,48 @@
     border-radius: 50%;
     
 }
+
+@media (min-width: 2000px) {
+    .square {
+        width: 73.4px;
+        height: 73.4px;
+        border: 1px solid #ffffff;
+        text-align: center;
+        font-weight: bold;
+        color: #000000;
+        font-size: 35px;
+        text-align: center;
+        box-sizing: border-box;
+    }
+    
+    .TW {
+        background-color: #c93d3c;
+    }
+    
+    .DW {
+        background-color: #ffc1c2;
+    }
+    
+    .TL {
+        background-color: #2a50f9;
+    }
+    
+    .DL {
+        background-color: #a8d8ef;
+    }
+    
+    .B {
+        background-color: #4fa66f;
+    }
+    
+    .C{
+        height: 73.4px;
+        width: 73.4px;
+        background-color: #ffc1c2;
+        border: none;
+        border-radius: 50%;
+        
+    }
+
+
+ }

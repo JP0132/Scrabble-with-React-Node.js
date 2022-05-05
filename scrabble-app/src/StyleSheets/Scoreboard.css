@@ -1,20 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+
 .scoreBoard{
-    border: 10px double #8415ce;
-    background-color:  #ba65f3;
+    background-color:  rgba(0, 0, 0, 0.31);
     color: white;
+    display: flex;
+    justify-content: center;
     align-items: center;
+    flex-direction: column;
     padding: 10px;
-    border-radius: 10%;
-}
-#scoreText{
-    font-weight: bolder;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    overflow: hidden;
     text-align: center;
-    font-size: 30px;
+    font-family: 'Unica One', sans-serif;
+    font-family: 'Permanent Marker', cursive;
+
 }
 
-#scoreNum{
-    align-items: center;
-    font-size: 80px;
-    font-weight: bolder;
-    text-align: center;
+table{
+    min-width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap;
+    padding: 10px;
+}
+
+thead {
+    background-color: black;
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.scoreboard-row{
+    background: #333;
+    color: #ccc;
+    border-bottom: solid 1px #999;
+}
+
+.scoreboard-score {
+    background:#666;
+    font-weight: bold;
+    font-size: 25px;
+    width: 30%;
+}
+
+.scoreboard-name {
+    font-size: 20px;
+    text-align: left;
+}
+
+
+
+
+@media only screen and (min-width: 850px) {
+    td {
+      padding: 10px;
+    }
+    
 }

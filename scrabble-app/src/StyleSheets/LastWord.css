@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Koulen&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+
+.lastWordContainer{
+    background-color:  rgba(0, 0, 0, 0.315);
+    color: white;
+    text-align: center;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-content: space-around;
+    padding: 10px;
+    font-family: 'Permanent Marker', cursive;
+
+}
+.lastWordContainer > h1{ 
+    margin: 0;
+}
+.wordText{
+    margin: 0;
+    font-size: 50px;
+    font-weight: bold;
+}

@@ -18,3 +18,27 @@
     font-weight: 500; 
     padding: 10px;
 }
+@media (min-width: 2000px) {
+    .tile{
+        line-height: 73.4px;
+        width: 73.4px;
+        height: 73.4px;
+        background-color: rgb(236, 225, 190);
+    }
+    
+    .tileLetter{
+        font-size: 30px;
+        display: inline-block;
+        vertical-align: middle;
+        font-weight: bold;
+    }
+    
+    .tileNum{
+        vertical-align:sub;
+        font-size: 20px; 
+        font-weight: 500; 
+        padding: 10px;
+    }
+
+
+}

@@ -52,3 +52,10 @@
   color: #666666;
   cursor: no-drop;
 }
+
+#ok:disabled,
+#ok[disabled]{
+  background-color: #cccccc;
+  color: #666666;
+  cursor: no-drop;
+}
