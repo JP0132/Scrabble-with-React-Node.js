@@ -13,16 +13,21 @@ export async function ValidateWord(){
     //Current Turn number
     let turnNumber = currentStore.game.value.turnNumber;
 
+    let blanks = currentStore.board.value.blanks;
+
     if(pos.length == 0){
-        return false;
+        return {pass: false, message: "No new tiles have been placed!"};
     }
 
-    //The turn number is 1, then a tile must be touching the center tile
-    if(turnNumber == 1){
-        console.log("Turn number is 1")
+    var board1D = [].concat(...currentBoard);
+    var boardSet = new Set(board1D);
+  
+    //The turn number is 1 or board is empty, then a tile must be touching the center tile
+    if(turnNumber == 1 || boardSet.size == 1){
+        
         let checkCenter = await isCenterSquareUsed(pos);
         if(!checkCenter){
-            return false;
+            return {pass: false, message: "A tile must connect on the center!"};
         }
     } 
 
@@ -31,15 +36,16 @@ export async function ValidateWord(){
 
     //Return false back to the game, tile positions are invalid
     if(vp == false){
-        return false;
+        return  {pass: false, message: "Tile positions are invalid"};
     }
 
     //Otherwise, make a fetch call to the node js server to validate the word(s)
     else{
-        console.log("Vp is true");
+        
         var data = {
             "positions" : vp,
-            "board" : currentBoard
+            "board" : currentBoard,
+            "blanks": blanks
         }
 
         const response = await fetch('http://localhost:3001/api/validateWord',{
@@ -51,8 +57,10 @@ export async function ValidateWord(){
         })
 
         const d = await response.json();
-        let p = d.pass;
-        return p;  
+        if(d.pass == false){
+            d.message = "Word(s) is not found!"
+        }
+        return d;  
     }
    
 
@@ -61,7 +69,7 @@ export async function ValidateWord(){
 //If one of the tiles is on the center
 async function isCenterSquareUsed(pos){
     if(pos.some(p => p.x == 7 && p.y == 7)){
-        console.log("Center tile true");
+        
         return true;
     }
     return false;
@@ -140,17 +148,25 @@ async function validatePositions(positions, turnNumber){
     //The word is in the column
     //All the x coords are the same
     if(isX){
-        console.log("All x coord tiles");
+        
         let copyPos = [...positions];
         //Sort the order of tiles in ascending order in terms of y coord
         copyPos = sortPositions("y", copyPos);
-        console.log("Sorted Positions",copyPos);
+        
         //Check if the tiles are connecting
         let tc = areTilesConnecting(copyPos, "y");
         switch (tc) {
             case 1:
-                console.log("Case 1");
+                
+                var board1D = [].concat(...currentBoard);
+                var boardSet = new Set(board1D);
                 if(turnNumber == 1){
+                    return {
+                        pos: copyPos,
+                        direction: "C"
+                    };
+                }
+                else if(turnNumber > 1 && boardSet.size == 1){
                     return {
                         pos: copyPos,
                         direction: "C"
@@ -165,10 +181,10 @@ async function validatePositions(positions, turnNumber){
                 }
                 return ta;
             case 2:
-                console.log("Case 2");
+                
                 return false;
             case 3:
-                console.log("Case 3");
+                
 
                 return {
                     pos: copyPos,
@@ -181,18 +197,26 @@ async function validatePositions(positions, turnNumber){
 
     // Word is in a row
     else if(isY){
-        console.log("All y coord tiles");
+        
         let copyPos = [...positions];
         copyPos = sortPositions("x", copyPos);
-        console.log("Sorted Positions",copyPos);
+        
         let tc = areTilesConnecting(copyPos, "x");
         switch (tc) {
             case 1:
-                console.log("Case 1");
+                
+                var board1D = [].concat(...currentBoard);
+                var boardSet = new Set(board1D);
                 if(turnNumber == 1){
                     return {
                         pos: copyPos,
                         direction: "R"
+                    };
+                }
+                else if(turnNumber > 1 && boardSet.size == 1){
+                    return {
+                        pos: copyPos,
+                        direction: "C"
                     };
                 }
                 let ta = await connectingAdjacentRow(copyPos);
@@ -204,10 +228,10 @@ async function validatePositions(positions, turnNumber){
                 }
                 return ta;
             case 2:
-                console.log("Case 2");
+                
                 return false;
             case 3:
-                console.log("Case 3");
+                
                 return {
                     pos: copyPos,
                     direction: "R"
@@ -219,7 +243,7 @@ async function validatePositions(positions, turnNumber){
     }
 
     else{
-        console.log("here");
+        
         return false;
     }
 }
@@ -234,12 +258,12 @@ const areTilesConnecting = (pos, coord) => {
     //Get the current board state
     let currentStore = storeSlicer.getState();
     let currentBoard = currentStore.board.value.currentBoard;
-    console.log("The one", currentBoard);
+    
 
-    console.log(pos);
+    
     //First position
     
-    //console.log(tempPos);
+    //
     //Track if a gap was found in between the tiles placed
     var gap = false;
     for(let i = 0; i < pos.length; i++){
@@ -254,7 +278,7 @@ const areTilesConnecting = (pos, coord) => {
             return 3;
         }
         var nextPos = pos[i+1];
-        console.log("next", nextPos);
+        
 
         if((tempPos[coord]+1) == nextPos[coord]){
             //If at the end of the loop and no gap has been found then return 1
@@ -270,14 +294,14 @@ const areTilesConnecting = (pos, coord) => {
             gap = true;
             //let diff = currentPos[coord] - tempPos[coord];
             let startCoord = tempPos[coord];
-            //console.log(currentPos);
+            //
             let endCoord = pos[i+1][coord];
-            console.log("Start coord", startCoord);
-            console.log("End coord", endCoord);
+            
+            
 
             if(coord == "x"){
                 let row = currentBoard[tempPos["y"]];
-                console.log("Current Row",row);
+                
                 
 
                 for(let x = startCoord+1; x < endCoord; x++){
@@ -288,12 +312,9 @@ const areTilesConnecting = (pos, coord) => {
             }
             else if(coord == "y"){
                 let xcoord = tempPos["x"];
-                console.log(pos);
-                console.log("Start Coord in y", startCoord);
-                console.log("End Coord in y", endCoord);
-                console.log("x Coord in y", xcoord);
-                for(let y = startCoord+1; y < endCoord-1; y++){
-                    console.log(currentBoard[y][xcoord]);
+                
+                for(let y = startCoord+1; y < endCoord; y++){
+                    
                     if(currentBoard[y][xcoord] == '*'){
                         return 2;
                     }
