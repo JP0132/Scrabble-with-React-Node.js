@@ -11,34 +11,14 @@ import { useEffect, useState } from 'react';
 
 
 
-
+//Smart component for square, handles the drop method when adding a tile to the board
 const BoardSquare = ({x, y, sqType, pos, children, isBlank, aBlank}) => {
-    
+    const gameMode = useSelector((state) => state.game.value.gameMode);
 
     const dispatch = useDispatch();
 
     const [blankValue, setBlankValue] = useState("");
 
-    // useEffect(() => {
-    //     let currentStore = storeSlicer.getState();
-    //     let pos = currentStore.board.value.blanks;
-    //     let tilePos = currentStore.square.value.tilePositions;
-    //     if(pos.length !== 0){
-    //         for(let i = 0; i < pos.length; i++){
-    //             let bl = pos[i];
-    //             for(let j = 0; j < tilePos.length; j++){
-    //                 let currentTile = tilePos[j];
-    //                 if(bl.x == currentTile.x && bl.y == currentTile.y){
-    //                     console.log("hi");
-                    
-    //                 }
-    //             }
-                
-    //         }
-    //     }
-        
-       
-    // }, [blankValue])
 
     const [{isOver}, drop] = useDrop(() => ({
         accept:"tile",
@@ -47,12 +27,14 @@ const BoardSquare = ({x, y, sqType, pos, children, isBlank, aBlank}) => {
         collect: (monitor) => ({
             isOver: !!monitor.isOver()
         })
-    }))
+    }));
     
+    //If the tile can drop on the square.
+    //Check the coordinates against the tiles already on the board
     const canDropOnSquare = (x, y) => {
         let currentStore = storeSlicer.getState();
         let pos = currentStore.square.value.tilePositions;
-        //console.log("Positions",pos);
+    
         let found = true;
         var foundObject;
 
@@ -75,19 +57,20 @@ const BoardSquare = ({x, y, sqType, pos, children, isBlank, aBlank}) => {
         }
         
     }
+
+    //Handles the blank
     async function handleBlank(l, index, id){
-        //let getBlank = await blank(true, x, y);
+        
         let currentStore = storeSlicer.getState();
         let cb = currentStore.board.value.currentBlank;
-       
-        //Add the blank tile to blanks in the boardslice
-        //In the tile have it filter through the tile
         return;
     }
     const [showBlank, setBlank] = useState(false);
 
+    //Add the tile to the square
     const addToSquare = async (l, id, index) => {
-        //console.log(index);
+        //If blank set blank state to true
+        //Will display the blank input to the user in the game
         if(l == "?"){
             setBlank(true);
             isBlank(true);
@@ -100,7 +83,7 @@ const BoardSquare = ({x, y, sqType, pos, children, isBlank, aBlank}) => {
         let pos = currentStore.square.value.tilePositions;
         let tiles = currentStore.rack.value.tilesToSwap;
       
-        //console.log("Positions",pos);
+        
         let found = false;
         var foundObject;
 
@@ -114,17 +97,17 @@ const BoardSquare = ({x, y, sqType, pos, children, isBlank, aBlank}) => {
                 break;
             }
         }
-        //console.log("Found",found);
-
+    
         for(let i = 0; i < tiles.length; i++){
             if(tiles[i].id === id){
                 swapFound = true;
                 foundSwapObject = i;
+                break;
             }
         }
         
+        //If tie already on the board, update its position
         if(found){
-            //console.log("updating");
             let currentStore = storeSlicer.getState();
             let blankPos = currentStore.board.value.blanks;
             let checkTile = pos[foundObject];
@@ -139,16 +122,29 @@ const BoardSquare = ({x, y, sqType, pos, children, isBlank, aBlank}) => {
            
             
             dispatch(updateTilePosition({id: id, index: foundObject, x: x, y: y}))
-            //console.log(pos);
+            //
         }
 
+        //If from swap, remove from the swap rack
         else if(swapFound){
             dispatch(removeFromSwapRack(foundSwapObject));
             dispatch(addTile({id: id, letter: l, x: x, y: y}));
         }
 
+        //Else remove from the  players rack
         else{
-            dispatch(removeFromPlayerRack(index));
+            
+            let currentStore = storeSlicer.getState();
+            let playerNo;
+            if(gameMode == "pvp"){
+                playerNo = currentStore.pvpgame.value.turnPlayer;
+            }
+            else{
+                playerNo = "player";
+            }
+            
+
+            dispatch(removeFromPlayerRack({index: index, playerNumber: playerNo + "Rack"}));
             dispatch(addTile({id: id, letter: l, x: x, y: y}));
         }
       

@@ -3,10 +3,12 @@ import { useState, useEffect } from 'react';
 import '../../StyleSheets/Tile.css'
 import { useDrag, useDrop } from 'react-dnd';
 
-
+//Creates the tile
 const Tile = ({ letter, id, index, isBlank}) => {
     let currentStore = storeSlicer.getState();
     let tilebag = currentStore.tilebag.value;
+
+    //Add the dragging capability to the tile
     const [{ isDragging }, drag] =  useDrag(() => ({
         type:  "tile",
         item: {letterValue: letter, id: id, index: index},
@@ -16,24 +18,6 @@ const Tile = ({ letter, id, index, isBlank}) => {
     }))
     var tileData = "";
     var letterData = "";
-    //const [tileData, setTile] = useState("");
-    //const [letterData, setLetter] = useState("");
-    // useEffect(() =>{
-    //     if(isBlank){
-    //         setLetter(letter);
-    //         setTile("?");
-
-    //     }
-    //     else{
-    //         setLetter(letter);
-    //         setTile(letter);
-    //     }
-    //     console.log(tileData);
-        
-    //     //console.log("use effect", letter);
-    // },[letter]);
-    //const opacity = isDragging ? 0 : 1;
-    //const tileCursor = isDragging ? "move" : "pointer";
 
     if(isBlank){
         tileData = "?";

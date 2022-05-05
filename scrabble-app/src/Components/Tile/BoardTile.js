@@ -4,7 +4,7 @@ import { useDrag, useDrop } from 'react-dnd';
 import { useSelector } from 'react-redux';
 import { storeSlicer } from '../../app/store';
 
-
+//Render already placed tiles
 const BoardTile = ({ letter, id, x, y}) => {
     let currentStore = storeSlicer.getState();
     let tilebag = currentStore.tilebag.value;
@@ -32,13 +32,6 @@ const BoardTile = ({ letter, id, x, y}) => {
         tl = letter;
     }
 
-    useEffect(() =>{
-        //console.log("yo");
-      
-    },[letter]);
-    //const opacity = isDragging ? 0 : 1;
-    //const tileCursor = isDragging ? "move" : "pointer";
- 
     return(
         <div key={id} className='tile'>
             <span className='tileLetter'>{tl}<span className='tileNum'>{tilebag[td].points}</span></span>
