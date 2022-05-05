@@ -1,13 +1,7 @@
 module.exports = {
-    crossCheck: async function(anchor, letter, board, dawg){
-        let x = anchor.x;
-        let y = anchor.y;
-        var word = letter;
-    },
-
 
     rowCrossChecks: async function(anchor, letter, board, dawg){
-        //console.log("HERE");
+     
         let x = anchor.x;
         let y = anchor.y;
         var word = letter;
@@ -29,9 +23,9 @@ module.exports = {
                         break;
                     }
                 }
-                //console.log("to right ", word);
+               
                 let check = dawg.find(word);
-                //console.log(check);
+              
                 if(check == 0){
                     return false;
                 }
@@ -59,9 +53,9 @@ module.exports = {
                         break;
                     }
                 }
-                console.log("to left ", word)
+             
                 let check = dawg.find(word);
-                console.log(check);
+               
                 if(check == 0){
                     return false
                 }
@@ -100,9 +94,9 @@ module.exports = {
                 }
             }
 
-            //console.log("Both ", word);
+            
             let check = dawg.find(word);
-            //console.log(check);
+            
             if(check == 0){
                 return false
             }
@@ -133,9 +127,9 @@ module.exports = {
                         break;
                     }
                 }
-                //console.log("down Col ", word);
+                
                 let check = dawg.find(word);
-                //console.log(check);
+              
                 if(check == 0){
                     return false;
                 }
@@ -165,9 +159,9 @@ module.exports = {
                         break;
                     }
                 }
-                console.log("up col ", word);
+                
                 let check = dawg.find(word);
-                console.log(check);
+               
                 if(check == 0){
                     return false
                 }
@@ -206,9 +200,9 @@ module.exports = {
                     break;
                 }
             }
-            //console.log("Both Col ", word);
+          
             let check = dawg.find(word);
-            //console.log(check);
+         
             if(check == 0){
                 return false
             }
@@ -216,342 +210,6 @@ module.exports = {
                 return false;
             }
             return true;     
-        }
-
-    },
-
-    
-    rowCrossCheck: async function(anchor, letter, board, dawg){
-        let copyBoard = [...board];
-        //When checking the top row of the board
-        //The square below the current square is not blank
-        //Start the check
-        if(anchor.y == 0 && copyBoard[anchor.y+1][anchor.x] !== "*"){
-            if(copyBoard[anchor.y+1][anchor.x] !== "*"){
-                let currentLetters = letter;
-                let found = true;
-                counter = 1;
-                while(found){
-                    let currentSquare = copyBoard[anchor.y+counter][anchor.x]
-                    if(currentSquare !== "*"){
-                        currentLetters += currentSquare;
-                        counter += 1;
-                    }
-                    else{
-                        found = false;
-                        break;
-                    }
-                }
-                
-                let check = dawg.find(currentLetters);
-                if(check == 0){
-                    return false
-                }
-                else if(!check){
-                    return false;
-                }
-                return true;
-            }
-            else{
-                return true;
-            }
-        }
-        else if(anchor.y == 14){
-            if(copyBoard[anchor.y-1][anchor.x] !== "*"){
-                let currentLetters = letter;
-                let found = true;
-                counter = 1;
-                while(found){
-                    let currentSquare = copyBoard[anchor.y-counter][anchor.x]
-                    if(currentSquare !== "*"){
-                        currentLetters = currentSquare + currentLetters;
-                        counter += 1;
-                    }
-                    else{
-                        found = false;
-                        break;
-                    }
-                }
-                let check = dawg.find(currentLetters);
-                
-                if(check == 0){
-                    return false
-                }
-                else if(!check){
-                    return false;
-                }
-                return true;
-            }
-            else{
-                return true;
-            }
-        }
-        else{
-            if(copyBoard[anchor.y-1][anchor.x] !== "*" && copyBoard[anchor.y+1][anchor.x] !== "*"){
-                let currentLetters = letter;
-                let up = true;
-                let down = true;
-                let counter = 1
-                while(up){
-                    let currentSquare = copyBoard[anchor.y-counter][anchor.x]
-                    if(currentSquare !== "*"){
-                        currentLetters = currentSquare + currentLetters;
-                        counter += 1;
-                    }
-                    else{
-                        up = false;
-                        counter = 0;
-                        break;
-                    }
-                }
-
-                while(down){
-                    let currentSquare = copyBoard[anchor.y+counter][anchor.x]
-                    if(currentSquare !== "*"){
-                        currentLetters = currentLetters + currentSquare;
-                        counter += 1;
-                    }
-                    else{
-                        down = false;
-                        counter = 0;
-                        break;
-                    }
-                }
-
-                let check = dawg.find(currentLetters);
-                if(check == 0){
-                    return false
-                }
-                else if(!check){
-                    return false;
-                }
-                return true;
-            }
-            else if(copyBoard[anchor.y-1][anchor.x] !== "*"){
-                let currentLetters = letter;
-                let up = true;
-                let counter = 1
-                while(up){
-                    let currentSquare = copyBoard[anchor.y-counter][anchor.x]
-                    if(currentSquare !== "*"){
-                        currentLetters = currentSquare + currentLetters;
-                        counter += 1;
-                    }
-                    else{
-                        up = false;
-                        counter = 0;
-                        break;
-                    }
-                }
-
-                let check = dawg.find(currentLetters);
-                if(check == 0){
-                    return false
-                }
-                else if(!check){
-                    return false;
-                }
-                return true;
-            }
-
-            else if(copyBoard[anchor.y+1][anchor.x] !== "*"){
-                let currentLetters = letter;
-                let down = true;
-                let counter = 1
-                while(down){
-                    let currentSquare = copyBoard[anchor.y+counter][anchor.x]
-                    if(currentSquare !== "*"){
-                        currentLetters = currentLetters + currentSquare;
-                        counter += 1;
-                    }
-                    else{
-                        down = false;
-                        counter = 0;
-                        break;
-                    }
-                }
-
-                let check = dawg.find(currentLetters);
-                if(check == 0){
-                    return false
-                }
-                else if(!check){
-                    return false;
-                }
-                return true;
-
-            }
-            else{
-                return true;
-            }
-
-        }
-
-    },
-
-    columnCrossCheck: async function(anchor, letter, board, dawg){
-        let copyBoard = [...board];
-        //When checking the top row of the board
-        if(anchor.x == 0){
-            //The square below the current square is not blank
-            //Start the check
-            if(copyBoard[anchor.y][anchor.x+1] !== "*"){
-                let currentLetters = letter;
-                let found = true;
-                counter = 1;
-                while(found){
-                    let currentSquare = copyBoard[anchor.y][anchor.x+counter]
-                    if(currentSquare !== "*"){
-                        currentLetters += currentSquare;
-                        counter += 1;
-                    }
-                    else{
-                        found = false;
-                        break;
-                    }
-                }
-                let check = dawg.find(currentLetters);
-                if(check == 0){
-                    return false
-                }
-                else if(!check){
-                    return false;
-                }
-                return true;
-            }
-            else{
-                return true;
-            }
-        }
-        else if(anchor.x == 14){
-            if(copyBoard[anchor.y][anchor.x-1] !== "*"){
-                let currentLetters = letter;
-                let found = true;
-                counter = 1;
-                while(found){
-                    let currentSquare = copyBoard[anchor.y][anchor.x-counter]
-                    if(currentSquare !== "*"){
-                        currentLetters = currentSquare + currentLetters;
-                        counter += 1;
-                    }
-                    else{
-                        found = false;
-                        break;
-                    }
-                }
-                let check = dawg.find(currentLetters);
-                
-                if(check == 0){
-                    return false
-                }
-                else if(!check){
-                    return false;
-                }
-                return true;
-            }
-            else{
-                return true;
-            }
-        }
-        else{
-            if(copyBoard[anchor.y][anchor.x-1] !== "*" && copyBoard[anchor.y][anchor.x+1] !== "*"){
-                let currentLetters = letter;
-                let up = true;
-                let down = true;
-                let counter = 1
-                while(up){
-                    let currentSquare = copyBoard[anchor.y][anchor.x-counter]
-                    if(currentSquare !== "*"){
-                        currentLetters = currentSquare + currentLetters;
-                        counter += 1;
-                    }
-                    else{
-                        up = false;
-                        counter = 0;
-                        break;
-                    }
-                }
-
-                while(down){
-                    let currentSquare = copyBoard[anchor.y][anchor.x+counter]
-                    if(currentSquare !== "*"){
-                        currentLetters = currentLetters + currentSquare;
-                        counter += 1;
-                    }
-                    else{
-                        down = false;
-                        counter = 0;
-                        break;
-                    }
-                }
-
-                let check = dawg.find(currentLetters);
-                if(check == 0){
-                    return false
-                }
-                else if(!check){
-                    return false;
-                }
-                return true;
-            }
-            else if(copyBoard[anchor.y][anchor.x-1] !== "*"){
-                let currentLetters = letter;
-                let up = true;
-                let counter = 1
-                while(up){
-                    let currentSquare = copyBoard[anchor.y][anchor.x-counter]
-                    if(currentSquare !== "*"){
-                        currentLetters = currentSquare + currentLetters;
-                        counter += 1;
-                    }
-                    else{
-                        up = false;
-                        counter = 0;
-                        break;
-                    }
-                }
-
-                let check = dawg.find(currentLetters);
-                if(check == 0){
-                    return false
-                }
-                else if(!check){
-                    return false;
-                }
-                return true;
-            }
-
-            else if(copyBoard[anchor.y][anchor.x+1] !== "*"){
-                let currentLetters = letter;
-                let down = true;
-                let counter = 1
-                while(down){
-                    let currentSquare = copyBoard[anchor.y][anchor.x+counter]
-                    if(currentSquare !== "*"){
-                        currentLetters = currentLetters + currentSquare;
-                        counter += 1;
-                    }
-                    else{
-                        down = false;
-                        counter = 0;
-                        break;
-                    }
-                }
-
-                let check = dawg.find(currentLetters);
-                if(check == 0){
-                    return false
-                }
-                else if(!check){
-                    return false;
-                }
-                return true;
-
-            }
-            else{
-                return true;
-            }
-
         }
 
     },
