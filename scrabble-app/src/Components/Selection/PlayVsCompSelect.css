@@ -1,0 +1,49 @@
+.modeSelect{
+    flex: 11;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgb(255, 255, 255);
+    height: 610px;
+    padding:0px 50px 0px 50px;
+    border-radius: 10px;
+    z-index: 11;
+}
+
+.modeBtns{
+    width: 400px;
+    height: 60px;
+    outline: none;
+    border: none;
+    border-radius: 56px;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 0 20px; 
+}
+
+
+#easy{
+    background-color: rgb(26, 130, 50);
+    color: white;
+}
+#easy:hover{
+    background-color: rgb(36, 179, 70);
+    color: white;
+}
+#medium{
+    background-color: rgb(230, 194, 14);
+    color: white;
+}
+#medium:hover{
+    background-color: rgb(255, 226, 83);
+    color: white;
+}
+#hard{
+    background-color: rgb(195, 38, 38);
+    color: white;
+}
+#hard:hover{
+    background-color: rgb(223, 43, 43);
+    color: white;
+}

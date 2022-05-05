@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Koulen&display=swap');
+.playerSelect{
+    flex: 11;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgb(255, 255, 255);
+    height: 610px;
+    padding:0px 50px 0px 50px;
+    border-radius: 10px;
+    z-index: 11;
+}
+
+.playerSelectBtn{
+    width: 400px;
+    height: 40px;
+    outline: none;
+    border: none;
+    border-radius: 56px;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 0 20px;
+    background-color: green; 
+    color: white;
+    font-family: 'Koulen', cursive;
+}
+
+.playerSelectCon{
+    display: flex;
+    flex-direction: row;
+}
+
+#add{
+    width: 200px;
+    background-color: rgb(28, 57, 163);
+    
+}
+
+#remove{
+    width: 200px;
+    background-color: rgb(185, 41, 41);
+}
+
+.playerSelectCon{
+    display: flex;
+    flex-direction: row;
+}
+
+#add:hover{
+    background-color: rgb(93, 122, 226);
+    
+}
+
+#remove:hover{
+    background-color: rgb(233, 106, 106);
+}
+
+#play:hover{
+    background-color: rgb(99, 187, 99);
+}
