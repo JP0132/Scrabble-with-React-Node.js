@@ -1,25 +1,38 @@
 import '../../StyleSheets/Board.css';
-import Square from '../Square/Square'
-import { useState, useEffect } from "react";
 import Tile from '../Tile/Tile';
 import BoardSquare from '../Square/BoardSquare';
 import { useDispatch, useSelector } from 'react-redux';
 import { BoardCoords } from '../Square/boardMap';
-import { LetterData } from '../../JSONData/LetterData.json';
 import BoardTile from '../Tile/BoardTile';
 
+//Variables to pass as prop to board square
 var setBlank;
 var isBlank;
 
-function renderSquare(squareNum, y, x, tilePositions, p, blankPositions){
+
+/**
+ * Renders the square, either as a tile or plain square
+ * @param  {Number} squareNum The square number form 1 to 225
+ * @param  {Number} y Y coordinate of the square
+ * @param  {Number} x X coordinate of the square
+ * @param  {Array}  tilePositions Positions of tiles on the board
+ * @param  {Char}   boardElement Value of the element in the board
+ * @param  {Array}  blankPositions Blank positions on the board
+ * @return {BoardSquare}  BoardSquare component to render the square
+ */
+function renderSquare(squareNum, y, x, tilePositions, boardElement, blankPositions){
+
+    //Child to pass to the Board Square if square is occupied
     var c;
-    if(p !== "*"){
-        c = <BoardTile letter={p} x={x} y={y}/>
+    if(boardElement !== "*"){
+        c = <BoardTile letter={boardElement} x={x} y={y}/>
     }
+    //If not then check if need to render tile
     else{
         c = renderTile(x, y, tilePositions, blankPositions);
     }
     
+    //Get the square type mapping through the board coordinates
     var type = "B";
     var sqTypeKeys = Object.keys(BoardCoords);
     for(let i = 0; i < sqTypeKeys.length; i++){
@@ -32,7 +45,7 @@ function renderSquare(squareNum, y, x, tilePositions, p, blankPositions){
         }
     }
   
-    
+    //Return the board square
     return(
         <div key={squareNum}>
             <BoardSquare x={x} y={y} sqType={type} pos={tilePositions} isBlank={setBlank} aBlank={isBlank}>{c}</BoardSquare>
@@ -40,6 +53,7 @@ function renderSquare(squareNum, y, x, tilePositions, p, blankPositions){
     )
 }
 
+//Function to check what kind of tile to render
 function renderTile(x, y, tilePos, blankPositions){
     for(let i = 0; i < tilePos.length; i++){
         let currentTile = tilePos[i];
@@ -58,48 +72,26 @@ function renderTile(x, y, tilePos, blankPositions){
 
             }
             
-            //console.log("AM here");
+            //
             
         }
     }
 }
 
+//Board component
 const Board = ({changeBlank, ifBlank}) => {
+    //Setting up the props to pass to the BoardSquare
     setBlank = changeBlank;
     isBlank = ifBlank;
 
- 
-    const boardMap = [
-        ['TW','B','B','DL','B','B','B','TW','B','B','B','DL','B','B','TW'],
-        ['B','DW','B','B','B','TL','B','B','B','TL','B','B','B','DW','B'],
-        ['B','B','DW','B','B','B','DL','B','DL','B','B','B','DW','B','B'],
-        ['DL','B','B','DW','B','B','B','DL','B','B','B','DW','B','B','DL'],
-        ['B','B','B','B','DW','B','B','B','B','B','DW','B','B','B','B'],
-        ['B','TL','B','B','B','TL','B','B','B','TL','B','B','B','TL','B'],
-        ['B','B','DL','B','B','B','DL','B','DL','B','B','B','DL','B','B'],
-        ['TW','B','B','DL','B','B','B','C','B','B','B','DL','B','B','TW'],
-        ['B','B','DL','B','B','B','DL','B','DL','B','B','B','DL','B','B'],
-        ['B','TL','B','B','B','TL','B','B','B','TL','B','B','B','TL','B'],
-        ['B','B','B','B','DW','B','B','B','B','B','DW','B','B','B','B'],
-        ['DL','B','B','DW','B','B','B','DL','B','B','B','DW','B','B','DL'],
-        ['B','B','DW','B','B','B','DL','B','DL','B','B','B','DW','B','B'],
-        ['B','DW','B','B','B','TL','B','B','B','TL','B','B','B','DW','B'],
-        ['TW','B','B','DL','B','B','B','TW','B','B','B','DL','B','B','TW']
-    ];
-
-
+    //Get the tile positions on the board
     const tilePositions = useSelector((state) => state.square.value.tilePositions);
     const blankPositions = useSelector((state) => state.board.value.blanks);
     const dispatch = useDispatch();
 
-    // const [tilesOnBoard, setTilesOnBoard] = useState([]);
-
-    // useEffect(() => {
-    //     setTilesOnBoard(tilePositions);
-    // }, [tilePositions])
-
     const currentBoard = useSelector((state) => state.board.value.currentBoard);
 
+    //Creates the squares, inserts into a list ready for rendering
     const squares = [];
     let sqNum = 0;
     for(let i = 0; i < currentBoard.length; i++){
