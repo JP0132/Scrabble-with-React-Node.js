@@ -1,0 +1,141 @@
+
+/* 
+.homeTitle{
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    padding: 1em;
+    background-color: rgb(10, 85, 48);
+    color: #fff;
+} */
+/* .title{
+    text-align: center;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    color: black;
+} */
+
+.intro{
+    z-index: 10;
+    flex: 0 0 65%;
+}
+#title{
+    color: rgb(255, 255, 255);
+}
+
+.darkenImage{
+    opacity:0.5;
+    filter: alpha(opacity=50);
+    background-color:#000; 
+    width:100%; 
+    height:100%; 
+    z-index:1;
+    top:0; 
+    left:0; 
+    position:fixed;  
+}
+
+.center{
+    flex: 11;
+    position: absolute;
+    left: 80%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgb(255, 255, 255);
+    height: 610px;
+    padding:0px 50px 0px 50px;
+    border-radius: 10px;
+    z-index: 11;
+}
+
+.logo{
+    margin-left: 80px;
+    margin-bottom: 20px;
+    height: 70px;
+}
+#bit{
+    height: 150px;
+    width: 250px;
+}
+.navigation{
+    margin-top: 20px;
+    margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    justify-content: center;
+}
+
+.homeBtns{
+    width: 400px;
+    height: 60px;
+    outline: none;
+    border: none;
+    border-radius: 56px;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 0 20px; 
+}
+
+#title{
+    color: rgba(0,195,172,0.75);
+    font-size: 40px;
+    display: inline-block;
+    white-space: nowrap;
+    position: absolute;
+    left: 170px;
+    top: 40%;
+    right: auto;
+    bottom: auto;
+    width: auto;
+    height: auto;
+    z-index: 10;
+    margin-top: 35px;
+    text-transform: uppercase;
+}
+
+#instruction{
+    background-color: rgb(114, 32, 146);
+    color: white;
+}
+#instruction:hover{
+    background-color: rgb(158, 48, 201);
+    color: white;
+}
+#playervscomp{
+    background-color: rgb(22, 120, 60);
+    color: white;
+}
+#playervscomp:hover{
+    background-color: rgb(36, 163, 85);
+    color: white;
+}
+#playervsplayer{
+    background-color: rgb(23, 93, 150);
+    color: white;
+}
+#playervsplayer:hover{
+    background-color: rgb(35, 127, 202);
+    color: white;
+}
+
+#homeText{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    margin-top: 70px;
+    text-align: center;
+
+}
+#weltext{
+
+}
+#wel{
+    font-size: 20px;
+    text-align: center;
+}
+
