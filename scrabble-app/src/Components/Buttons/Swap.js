@@ -12,25 +12,44 @@ import { v4 as uuidv4 } from 'uuid';
 import {DrawTiles} from "../Rack/RackHelper";
 import { addTileToBag } from "../../features/tilebagSlice";
 
-const Swap = ({handleCancelSwap}) => {
+//Display the swap rack component
+const Swap = ({handleCancelSwap, setSwap}) => {
+    //Hooks
     const dispatch = useDispatch();
     const tilesToSwap = useSelector((state) => state.rack.value.tilesToSwap);
+    const gameMode = useSelector((state) => state.game.value.gameMode);
+
+    //Which player rack it is
+    let playerNumber;
+    if(gameMode == "pvp"){
+        let currentStore = storeSlicer.getState();
+        playerNumber = currentStore.pvpgame.value.turnPlayer;
+    }
+    else{
+        playerNumber = "player"
+    }
+
+    //State variables to track state
     const [swapTiles, setSwapTiles] = useState([]);
     const [disableCancel, setDisableCancel] = useState(false);
+    const [disableOk, setOkDisable] = useState(false);
 
+    //useEffect hook to change the state variable to disable ok and cancel buttons
     useEffect(() => {
         setSwapTiles(tilesToSwap);
         if(tilesToSwap.length > 0){
-            console.log(tilesToSwap.length);
+            
             setDisableCancel(true);
+            setOkDisable(false);
         }
         else if(tilesToSwap.length === 0){
-            console.log(tilesToSwap.length);
+            
             setDisableCancel(false);
+            setOkDisable(true);
         }
     }, [tilesToSwap]);
 
-
+    //Dragging has stopped, add the tile to the rack
     const [{isOver}, drop] = useDrop(() => ({
         accept:"tile",
         drop: (item) => addToSwap(item.letterValue, item.id, item.index),
@@ -39,14 +58,19 @@ const Swap = ({handleCancelSwap}) => {
         })
     }))
 
+    //Handles the adding
     const addToSwap = (letter, id, index) => {
+        //Get the current tiles on the board
         let currentStore = storeSlicer.getState();
         let pos = currentStore.square.value.tilePositions;
 
+        //Current tiles in the swap rack
         let tiles = currentStore.rack.value.tilesToSwap;
 
+        //If the tile is on the board
         let found = false;
         var foundObject;
+
 
         let swapFound = false;
         var foundSwapObject;
@@ -69,21 +93,39 @@ const Swap = ({handleCancelSwap}) => {
             dispatch(removeFromSquare(foundObject));
             dispatch(addToSwapRack(letter));
         }
-        if(!swapFound){
-            dispatch(removeFromPlayerRack(index));
+
+        else if(!swapFound){
+            let playerNo;
+            if(gameMode == "pvp"){
+                playerNo = currentStore.pvpgame.value.turnPlayer;
+            }
+            else{
+                playerNo = "player";
+            }
+            dispatch(removeFromPlayerRack({index: index, playerNumber: playerNo+"Rack"}));
             dispatch(addToSwapRack(letter));
         }
         
     }
 
+    //Confirming the swap, get new tiles to add the rack
     const confirmSwap = () => {
         let noOfTilesNeeded = tilesToSwap.length;
         let newTiles = DrawTiles(noOfTilesNeeded);
-        for(let i = 0; i < newTiles.length; i++){
-           dispatch(addToPlayerRack(newTiles[i]));
+        let currentStore = storeSlicer.getState();
+        let playerNo;
+        if(gameMode == "pvp"){
+            playerNo = currentStore.pvpgame.value.turnPlayer;
+        }
+        else{
+            playerNo = "player";
         }
 
-        let currentStore = storeSlicer.getState();
+        for(let i = 0; i < newTiles.length; i++){
+           dispatch(addToPlayerRack({letter: newTiles[i], playerNumber: playerNo+"Rack"}));
+        }
+
+        
         let tiles = currentStore.rack.value.tilesToSwap;
 
         for(let i = 0; i < tiles.length; i++){
@@ -93,9 +135,13 @@ const Swap = ({handleCancelSwap}) => {
         }
         dispatch(resetSwapRack());
 
-        handleCancelSwap();
-
+        handleCancelSwap(true);
     }
+
+    const handleCancelClick = () => {
+        handleCancelSwap(false);
+    }
+
 
     return(
         <div className="swapRack">
@@ -105,8 +151,8 @@ const Swap = ({handleCancelSwap}) => {
                 })}     
             </div>
             <div className='conBtn'>
-                <button className="swapBtns" id="ok" onClick={confirmSwap}>Ok</button>
-                <button className="swapBtns" id="cancel" onClick={handleCancelSwap} disabled={disableCancel}>Cancel</button>
+                <button className="swapBtns" id="ok" onClick={confirmSwap} disabled={disableOk}>Ok</button>
+                <button className="swapBtns" id="cancel" onClick={handleCancelClick} disabled={disableCancel}>Cancel</button>
             </div>
         </div>
     );
