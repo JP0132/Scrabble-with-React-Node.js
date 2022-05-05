@@ -9,12 +9,12 @@ class DawgNode{
 
 }
 
-//Actual gaddag
+//Actual Dawg
 class Dawg{
     constructor (){
         this.root = new DawgNode();
 
-        //Previous word entered into the gaddag
+        //Previous word entered into the Dawg
         this.previousWord = "";
 
         // List of nodes that have not been checked for duplication
@@ -22,12 +22,9 @@ class Dawg{
 
         // List of unique nodes that have been checked for duplication
         this.minimizedNodes = {};
-
-        //Read the dictionary text file into the data structure
-        //this.readLine(dict);
     }
 
-     // Inserts the word into the gaddag
+     // Inserts the word into the Dawg
      insert(word){
         let commonPrefix = 0;
     
@@ -84,16 +81,19 @@ class Dawg{
     }
 
     minimization(downTo){
+        //from the node go up to a certain point
         for(let i = this.uncheckedNodes.length-1; i > downTo - 1; i--){
             //Getting set of uncheckedNodes
             var currentUnchecked = this.uncheckedNodes[i];
-            //var childKey = this.str(tuple.childNode);
+            
             var node = this.minimizedNodes[currentUnchecked.childNode];
 
             if(node){
+                //replace the child with the previously encountered one
                 currentUnchecked.parentNode.edges[currentUnchecked.letter] = node;
             }
             else{
+                //add the state to the minimized nodes.
                 this.minimizedNodes[currentUnchecked.childKey] = currentUnchecked.childNode;
             }
             this.uncheckedNodes.pop();
@@ -101,11 +101,12 @@ class Dawg{
        
     }
 
+    //Finds the word
+    //Returns 0 if not found or false if word incomplete
     find(word){
         var node = this.root;
         for(let i = 0; i < word.length; i++){
             let letter = word[i];
-            //console.log(letter);
             if(!node.edges[letter]){
                 return 0;
             }
@@ -114,14 +115,17 @@ class Dawg{
         return node.final;
     }
 
+    //Return the root
     getRootNode(){
         return this.root;
     }
 
+    //Gets the next node
     getNextNode(node, letter){
         return node.edges[letter];
     }
 
+    //Check if the node exists
     checkIfNodeExists(node, letter){
         if(!node.edges[letter]){
             return 0;
@@ -129,6 +133,7 @@ class Dawg{
         return 1;
     }
 
+    //Get the node of a partial word
     getNode(word){
         var node = this.root;
         for(let i = 0; i < word.length; i++){
@@ -150,73 +155,6 @@ class Dawg{
         this.nextId = null;
     }
     
-    readLine(dict){
-        console.log("Reading the dictionary");
-        //Reading each line of the text file
-        //Creating a inteface to read each line
-        this.lineReader = readline.createInterface({
-            input: require('fs').createReadStream(dict)
-        });
-
-        //Will be used to sort the words of the dictionary by letter
-        const words = {
-            A: [],
-            B: [],
-            C: [],
-            D: [],
-            E: [],
-            F: [],
-            G: [],
-            H: [],
-            I: [],
-            J: [],
-            K: [],
-            L: [],
-            M: [],
-            N: [],
-            O: [],
-            P: [],
-            Q: [],
-            R: [],
-            S: [],
-            T: [],
-            U: [],
-            V: [],
-            W: [],
-            X: [],
-            Y: [],
-            Z: []
-        };
-         
-        //Using the interface to read each line
-        this.lineReader.on('line', function (line) {
-
-            if(line === "FINALLINE"){
-                var wordKeys = Object.keys(words);
-                for(let i = 0; i < wordKeys.length; i++){
-                    const keyWordList = words[wordKeys[i]].sort();
-                    for(let j = 0; j < keyWordList.length; j++){
-                        insertingIntoDawg(keyWordList[j]);
-                    }
-                }
-                finishBuilding();
-            }
-
-            else{
-                words[line[0]].push(line);
-            }
-        });
-
-        //Testing the insertion of words as a trie first
-        const insertingIntoDawg = (word) => {
-            this.insert(word);
-        }
-
-        const finishBuilding = () => {
-            this.finish();
-        }
-
-    }
 }
 
 module.exports = Dawg;

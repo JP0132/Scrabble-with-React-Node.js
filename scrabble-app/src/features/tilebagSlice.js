@@ -38,6 +38,9 @@ export const tilebagSlice = createSlice({
     name: "tilebag",
     initialState,
     reducers:{
+        restTileBag: (state, action) => {
+            Object.assign(state, initialState);
+        },
         addTileToBag: (state, action) =>{
             if( state.value[action.payload].number == 0){
                 state.value.letters.push(action.payload);
@@ -64,6 +67,6 @@ export const tilebagSlice = createSlice({
     }
 });
 
-export const { addTileToBag, removeTileFromBag} = tilebagSlice.actions;
+export const { restTileBag, addTileToBag, removeTileFromBag} = tilebagSlice.actions;
 
 export default tilebagSlice.reducer;

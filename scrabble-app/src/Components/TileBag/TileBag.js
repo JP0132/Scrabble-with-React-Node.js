@@ -2,9 +2,7 @@ import "../../StyleSheets/tileBag.css";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-
-
-
+//Tile bag counter
 const TileBag = ({tn}) => {
     const tilebag = useSelector((state) => state.tilebag.value.bag);
     const [bag, setBag] = useState(0);

@@ -9,13 +9,14 @@ const BlankTile = ({blank, setBValue, x ,y}) => {
     const dispatch = useDispatch();
 
     const handleKeyPress = (e) => {
-        //console.log(e);
+        //Accept only letters
         const re = /[a-zA-Z]+/g;
         if (!re.test(e.key)) {
             e.preventDefault();
         }
-        //return (e.charCode >= 65 && e.charCode <= 90) || (e.charCode >= 97 && e.charCode <= 122);
+        
     }
+    //Set the blank value in the blanks state
     const handleSubmit = () => {
         if(input == ""){
             alert("Input cannot be blank");
@@ -33,7 +34,7 @@ const BlankTile = ({blank, setBValue, x ,y}) => {
             blank(false);
         }
     }
-
+    
     return (
         <>  
             <div className="overlay"></div>

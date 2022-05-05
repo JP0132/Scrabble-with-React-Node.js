@@ -1,3 +1,4 @@
+//Constants for the board
 export const boardMap = [
     ['TW','B','B','DL','B','B','B','TW','B','B','B','DL','B','B','TW'],
     ['B','DW','B','B','B','TL','B','B','B','TL','B','B','B','DW','B'],
@@ -19,7 +20,7 @@ export const boardMap = [
 export const BoardCoords = {
     'TW':[
         {x:0,y:0}, {x:7,y:0},{x:14,y:0},
-        {x:0,y:7},{x:7,y:7}, {x:14,y:7},
+        {x:0,y:7}, {x:14,y:7},
         {x:0,y:14}, {x:7,y:14}, {x:14,y:14}
     ],
 

@@ -4,10 +4,9 @@ var bodyParser = require('body-parser');
 const app = express()
 app.use(cors())
 require('dotenv').config()
-//app.use(bodyParser.urlencoded({ extended: false }))
-//app.use(bodyParser.json())
+//Node set up
 var jsonParser = bodyParser.json()
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
+
 
 app.use('/api/computerMove/', jsonParser,require('./routes/calculateMove'))
 app.use('/api/validateWord/', jsonParser,require('./routes/validateMove'))
@@ -15,5 +14,5 @@ app.use('/api/validateWord/', jsonParser,require('./routes/validateMove'))
 const PORT = process.env.PORT || 3001
 
 app.listen(PORT, ()=> {
-    console.log(`Listening on port ${PORT}`)
+    
 })
