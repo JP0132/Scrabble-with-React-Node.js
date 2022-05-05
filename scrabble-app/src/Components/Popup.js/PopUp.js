@@ -7,7 +7,7 @@ const PopUp = ({message}) => {
         <div className="overlay">
         </div>
         <div className="popup">
-            {message}
+            <h2 className='popupMessage'>{message}</h2>
         </div>
     </>
       
