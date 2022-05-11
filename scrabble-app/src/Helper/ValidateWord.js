@@ -85,7 +85,43 @@ async function validatePositions(positions, turnNumber){
         let tilePos = positions[0];
         let x = tilePos.x;
         let y = tilePos.y;
-        if(x == 14){
+
+        if(y == 0){
+            if(currentBoard[y+1][x] != "*"){
+                return {
+                    pos: positions,
+                    direction: "C"
+                };
+            }
+        }
+        
+        else if(y == 14){
+            if(currentBoard[y-1][x] != "*"){
+                return {
+                    pos: positions,
+                    direction: "C"
+                };
+            }
+        }
+
+        else{
+            if(currentBoard[y+1][x] !== "*" || currentBoard[y-1][x] !== "*"){
+                return {
+                    pos: positions,
+                    direction: "C"
+                };
+            }
+        }
+
+        if(x == 0){
+            if(currentBoard[y][x+1] !== "*"){
+                return {
+                    pos: positions,
+                    direction: "R"
+                };
+            }
+        }
+        else if(x == 14){
             if(currentBoard[y][x-1] !== "*"){
                 return {
                     pos: positions,
@@ -93,47 +129,17 @@ async function validatePositions(positions, turnNumber){
                 };
             }
         }
-        else if(x == 0){
-            if(currentBoard[y][x+1]){
+        else{
+            if(currentBoard[y][x+1] !== "*" || currentBoard[y][x-1] !== "*"){
                 return {
                     pos: positions,
                     direction: "R"
                 };
             }
         }
-
-        if(y == 14){
-            if(currentBoard[y-1][x] !== "*"){
-                return {
-                    pos: positions,
-                    direction: "C"
-                };
-            }
-        }
-        else if(y == 0){
-            if(currentBoard[y+1][x] !== "*"){
-                return{
-                    pos: positions,
-                    direction: "C"
-                }
-            }
-        }
-
-        if(currentBoard[y][x+1] !== "*" || currentBoard[y][x-1] !== "*" ){
-            return{
-                pos: positions,
-                direction: "R"
-            }
-        }
-        else if(currentBoard[y+1][x] !== "*" || currentBoard[y-1][x] !== "*" ){
-            return{
-                pos: positions,
-                direction: "C"
-            }
-        }
-        else{
-            return false;
-        }
+     
+        return false;
+        
     }
     
     //Sorts the positions increasing order
