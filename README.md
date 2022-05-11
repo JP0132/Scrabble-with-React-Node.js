@@ -1,14 +1,16 @@
-# Your project name here
+# Scrabble Computer Player
 
-## Information about this repository
+## Scrabble game that allows computer vs player and player vs player, built using React.js and Node.js
 
-NPM is needed to run this project.
-Run npm install to install the packages for both folder.
-Run the servers on separate terminal.
-React is ran using npm start and node is ran usin npm run dev
+-To run this project, download the two separate folders, scrabble-app and scrabble-nodeJS
+-NPM, react and node is needed to run this project
+-For both folders do the following:
+-Move into the directory of both folders on separate terminals
+-Use the command npm install to download all the packages that are needed for the project. (This may take a while)
 
-This is the repository that you are going to use **individually** for developing your project. Please use the resources provided in the module to learn about **plagiarism** and how plagiarism awareness can foster your learning.
+-To run the project use separate terminals and run the commands below
+-For the scrabble-app it is **npm start**
+-For the scrabble-nodeJS it is **npm run dev**
 
-Regarding the use of this repository, once a feature (or part of it) is developed and **working** or parts of your system are integrated and **working**, define a commit and push it to the remote repository. You may find yourself making a commit after a productive hour of work (or even after 20 minutes!), for example. Choose commit message wisely and be concise.
+-This should start the react and node server up. Once the react app opens automatically on the browser, the software can be used.
 
-Please choose the structure of the contents of this repository that suits the needs of your project but do indicate in this file where the main software artefacts are located.
