@@ -86,6 +86,9 @@ exports.calculateMove = (req, res) => {
 
         //Begins by searching the board
         searchBoard(board, rack).then(d =>{
+            // console.log("best word");
+            // console.log(bestWordToPlay);
+            // console.log(rack);
 
             //If the best word is empty then, call the swap function
             if(bestWordToPlay.word === ""){
@@ -133,6 +136,7 @@ exports.calculateMove = (req, res) => {
                         blanks: [],
                         lettersUsed: []
                     };
+                    wordScore = 0;
     
                 });
 
@@ -232,6 +236,7 @@ async function searchBoard(board, rack){
                     let anchorConfirm = await isAnchor(board, x, y);
                     //If at least one blank space has been found
                     if(anchorConfirm.up || anchorConfirm.down || anchorConfirm.left || anchorConfirm.right){
+                       
                         //Get the tiles already placed and free spaces
                         let w = await getAlreadyPlacedTilesRow(anchorConfirm.left, anchorConfirm.right,anchorConfirm.up,anchorConfirm.down,y, x, rack, board);
                     }
@@ -257,7 +262,7 @@ async function searchBoard(board, rack){
  * @return {} No value returned, return to complete the Async and Await nature
  */
 async function getAlreadyPlacedTilesRow(left, right, up, down, y, x, rack, board){
-    
+  
     //Get the free spaces to place a tile on the left of the anchor
     var freeSpacesLeft = 0;
     //Free spaces above the tile
@@ -305,7 +310,7 @@ async function getAlreadyPlacedTilesRow(left, right, up, down, y, x, rack, board
     }
 
     //If the right of the anchor is free
-    else if(right){
+    if(right){
         currentLetters += board[y][x];
         for(let i = x-1; i >= 0; i--){
             if(board[y][i] !== "*"){
@@ -329,7 +334,7 @@ async function getAlreadyPlacedTilesRow(left, right, up, down, y, x, rack, board
      //If the above of the anchor is empty
      if(up){
        
-        for(let i = y-1; i > -1; i--){
+        for(let i = y-1; i >= 0; i--){
             if(board[i][x] != "*"){
                 break;
             }
@@ -347,13 +352,13 @@ async function getAlreadyPlacedTilesRow(left, right, up, down, y, x, rack, board
             y: y-1,
         }
 
-        if(freeSpacesLeft > 1){
-            let found = await leftPart("",blanks, dawg.getRootNode(), freeSpacesLeft, anchor, rack,"C", board, cross);
+        if(freeSpacesUp > 1){
+            let found = await leftPart("",blanks, dawg.getRootNode(), freeSpacesUp, anchor, rack,"C", board, cross);
             
         }
 
-        else if(freeSpacesLeft == 1 && y == 0){
-            let found = await leftPart("",blanks, dawg.getRootNode(), freeSpacesLeft, anchor, rack,"C", board, cross);
+        else if(freeSpacesUp == 1 && y == 0){
+            let found = await leftPart("",blanks, dawg.getRootNode(), freeSpacesUp, anchor, rack,"C", board, cross);
            
         }
       
@@ -361,7 +366,7 @@ async function getAlreadyPlacedTilesRow(left, right, up, down, y, x, rack, board
     }
 
     //If the below of the anchor is free
-    else if(down){
+    if(down){
         currentLetters = board[y][x] + currentLetters;
         for(let i = y-1; i >= 0; i--){
             if(board[i][x] !== "*"){
@@ -404,7 +409,7 @@ async function leftPart(partialWord, blanks, node, limit, anchor, rack, directio
 
     //Sends the current word to the extend right, to add more letters and validate word
     if(partialWord !== ""){
-        let validWords = await extendRight(partialWord, blanks, node, anchor, rack, direction,false, board, lettersUsed);
+        let validWords = await extendRight(partialWord, blanks, node, anchor, rack, direction,false, board, lettersUsed, true);
     }
     
     //Until the limit is zero keep adding letters from the rack
@@ -417,7 +422,7 @@ async function leftPart(partialWord, blanks, node, limit, anchor, rack, directio
         for(let i = 0; i < rack.length; i++){
             
             if(rack[i] == "?"){
-                console.log("Blank");
+              
                 let ascii = 65;
                 var char;
                 for(let j = 0; j < 26; j++){
@@ -666,9 +671,12 @@ async function legalMove(word, squarePos, direction, blanksTiles, lettersUsed, b
             }
         }
 
-        console.log(currentWordCoord);
+        
        
         let currentWordScore = await Scorer.scorer(currentWordCoord, board, blanksUsed);
+        if(isNaN(currentWordScore)){
+           
+        }
         
         if(currentWordScore > wordScore){
             //If it has a blank then check to make sure the score is more than 20 or all tiles been used
@@ -678,16 +686,16 @@ async function legalMove(word, squarePos, direction, blanksTiles, lettersUsed, b
                     wordScore = currentWordScore;
                     let y = squarePos.y;
                     let x = squarePos.x;
-                    console.log("h");
+                 
                     let setting = await setBestWord(x, y, word, direction, blanksTiles, lettersUsed);
                     return bestWordToPlay;
                 }
             } 
-            else if(blanksTiles.length === 0){
+            else if(blanksTiles.length == 0){
                 wordScore = currentWordScore;
                 let y = squarePos.y;
                 let x = squarePos.x;
-                console.log("h2");
+              
                 let setting = await setBestWord(x, y, word, direction, blanksTiles, lettersUsed);
                 return bestWordToPlay;
             }
@@ -699,12 +707,14 @@ async function legalMove(word, squarePos, direction, blanksTiles, lettersUsed, b
                 let heuristicBestCheck = await heuristicCheck(bestWordToPlay.lettersUsed);
                 let heuristicCurrentCheck = await heuristicCheck(lettersUsed);
                 if(heuristicBestCheck > heuristicCurrentCheck){
+                    wordScore = currentWordScore;
                     let setting = await setBestWord(currentX, currentY, word, direction, blanksTiles, lettersUsed);
                     return bestWordToPlay;
                 }
             }
             //If one of them has a blank, then select the one without the blank
             else if(currentWordCoord.blanks.length == 0 && bestWordToPlay.blanks.length == 1){ 
+                wordScore = currentWordScore;
                 let setting = await setBestWord(currentX, currentY, word, direction, blanksTiles, lettersUsed);
                 return bestWordToPlay;
             }
