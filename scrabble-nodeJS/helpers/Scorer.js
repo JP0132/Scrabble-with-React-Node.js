@@ -85,11 +85,11 @@ module.exports = {
         let blanksOnBoard = blanks;
         let blanksInWord = coords.blanks;
         var score = 0;
-        let otherScore = [];
+        let otherScore = [];direction
         let multiplier = 1;
         let letterBonus = 1;
         let rackCounter = 0;
-        console.log(coords);
+        
 
         //Check which direction
         if(direction == "R"){
@@ -160,7 +160,7 @@ module.exports = {
         else{
             let currentY = start;
             for(let r = 0; r < word.length; r++){
-                console.log(currentY);
+               
                 let currentSquare= board[currentY][x];
                 if(currentSquare !== "*"){
                     let checkBlanks = await checkIfBlank(blanksOnBoard, x, currentY);
