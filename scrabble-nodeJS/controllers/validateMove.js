@@ -125,17 +125,16 @@ async function validateWord(positions){
 
     //Looping through the positions and setting the letters in the 
     //board copy
+  
     for(let i = 0; i < positions.pos.length; i++){
         let x = pos[i].x;
         let y = pos[i].y;
         let l = pos[i].letter;
-        // if(l == "?"){
-        //     let b = await checkBlanks(blanks, x, y);
-        //     wordBeingPlayed.blanks.push({x: x, y:y, letter: b});
-        //     l = b;
-        // }
+        
         copyBoard[y][x] = l;
     }
+
+    
 
     //If the word played is in the column direction
     if(positions.direction == "C"){
@@ -340,7 +339,6 @@ async function validateWord(positions){
                     else{
                         word = copyBoard[y][currentX] + word;
                     }
-                    
                     currentX = currentX - 1;
                 }
                 else{
@@ -366,13 +364,16 @@ async function validateWord(positions){
                     break;
                 }
                 if(copyBoard[y][currentX] !== "*"){
-                   
+                    
                     if(copyBoard[y][currentX] == "?"){
                         let getLetter = await checkBlanks(blanks, currentX, y);
                         word = getLetter + word;
                         wordBeingPlayed.blanks.push({x: currentX, y: y, letter: getLetter});
                     }
-                    word = copyBoard[y][currentX] + word;
+                    else{
+                        word = copyBoard[y][currentX] + word;
+                    }
+                   
                     currentX = currentX - 1;
                 }
                 else{
@@ -385,7 +386,7 @@ async function validateWord(positions){
             let xDown = firstTilePlaced.x;
             while(right){
                 if(xDown > 14){
-                    left = false;
+                    right = false;
                     break;
                 }
                 if(copyBoard[y][xDown] !== "*"){
@@ -394,7 +395,10 @@ async function validateWord(positions){
                         word = word + getLetter;
                         wordBeingPlayed.blanks.push({x: xDown, y: y, letter: getLetter});
                     }
-                    word = word + copyBoard[y][xDown];
+                    else{
+                        word = word + copyBoard[y][xDown];
+                    }
+                    
                     xDown += 1;
                 }
                 else{
@@ -413,7 +417,7 @@ async function validateWord(positions){
 
     
     let checkWord = dawg.find(word);
-    console.log(word);
+    
     wordBeingPlayed.word = word;
     
     //If passes then do cross checks otherwise validation has failed
