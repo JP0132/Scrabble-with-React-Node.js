@@ -88,7 +88,7 @@ const Game = () => {
         if(computerRack.length !== 0){
             for(let i = 0; i < computerRack.length; i++){
                 let points = tileBag[computerRack[i]].points;
-                computerDeductPoints += points;
+                computerDeductPoints = computerDeductPoints + points;
                 finalComputerScore = finalComputerScore - points;
             }
            
@@ -96,37 +96,37 @@ const Game = () => {
         if(playerRack.length !== 0){
             for(let i = 0; i < playerRack.length; i++){
                 let points = tileBag[playerRack[i].letter].points;
-                playerDeductPoints += points;
+                playerDeductPoints = playerDeductPoints + points;
                 finalPlayerScore = finalPlayerScore - points;
             }
         }
         
         if(playerRack.length == 0){
-            finalPlayerScore += computerDeductPoints;
+            finalPlayerScore = finalPlayerScore + computerDeductPoints;
         }
         if(computerRack.length == 0){
-            finalComputerScore += playerDeductPoints;
+            finalComputerScore = finalComputerScore + playerDeductPoints;
         }
 
         if(finalComputerScore > finalPlayerScore){
-            dispatch(setWinner({name: "AIECHO", score: finalComputerScore}));
+            dispatch(setWinner({name: "BIT SCRABBLE", score: finalComputerScore}));
             dispatch(setLosers({name:"Player", score: finalPlayerScore}));
         }
 
         else if(finalPlayerScore > finalComputerScore){
             
-            dispatch(setLosers({name: "AIECHO", score: finalComputerScore}));
+            dispatch(setLosers({name: "BIT SCRABBLE", score: finalComputerScore}));
             dispatch(setWinner({name:"Player", score: finalPlayerScore}));
         }
 
         else if(finalComputerScore == finalPlayerScore){
             if(currentComputerScore > currentPlayerScore){
-                dispatch(setWinner({name: "AIECHO", score: finalComputerScore}));
+                dispatch(setWinner({name: "BIT SCRABBLE", score: finalComputerScore}));
                 dispatch(setLosers({name:"Player", score: finalPlayerScore}));
             }
 
             else if(currentPlayerScore > currentComputerScore){
-                dispatch(setLosers({name: "AIECHO", score: finalComputerScore}));
+                dispatch(setLosers({name: "BIT SCRABBLE", score: finalComputerScore}));
                 dispatch(setWinner({name:"Player", score: finalPlayerScore}));
             }
         }
