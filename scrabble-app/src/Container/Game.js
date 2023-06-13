@@ -2,9 +2,9 @@ import './Game.css';
 import Board from '../Components/Board/Board';
 import Rack from '../Components/Rack/Rack';
 import GameBtn from '../Components/Buttons/GameBtn';
-import GameData from '../JSONData/GameData.json'
+
 import { useEffect, useState } from 'react';
-import {MakeMove} from '../Helper/ComputerMove';
+
 import {storeSlicer} from "../app/store";
 import { addToComputerRack, removeTileFromComputerRack, restRackState, setComputerRack, shuffleRack, updateRack } from "../features/rackSlice";
 import { useDispatch, useSelector } from 'react-redux';

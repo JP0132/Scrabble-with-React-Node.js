@@ -1,4 +1,3 @@
-import GameData from "../../JSONData/GameData.json";
 import {DrawTiles} from "./RackHelper";
 import Tile from "../Tile/Tile";
 import "../../StyleSheets/Rack.css";
@@ -9,7 +8,6 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
-import { actioncreators } from "../../state/action-creator/allActionsCreators";
 import { addToPlayerRack, removeFromSwapRack } from "../../features/rackSlice";
 import { removeFromSquare} from "../../features/squareSlice";
 import RackBtn from '../Buttons/RackBtn';
