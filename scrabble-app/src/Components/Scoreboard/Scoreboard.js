@@ -11,7 +11,7 @@ const Scoreboard = ({user}) => {
     let scores = [];
     
     //Get each player score and name if PvP
-    if(gameMode == "pvp"){
+    if(gameMode === "pvp"){
         let currentStore = storeSlicer.getState();
         let noOfPlayers = currentStore.pvpgame.value.noOfPlayers;
         for(let i = 1; i < noOfPlayers+1; i++){

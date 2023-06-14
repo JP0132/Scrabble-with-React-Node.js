@@ -47,8 +47,8 @@ const PlayerVsPlayerSelect = () => {
     //On submit check if all player field are entered, if not send a alert.
     //Otherwise dispatch the data to the store
     const handleSubmit = () => {
-        if(extraPlayers == 2){
-            if(player1Name == "" || player2Name == ""){
+        if(extraPlayers === 2){
+            if(player1Name === "" || player2Name === ""){
                 alert("All fields must be filled in");
             }
             else{
@@ -62,8 +62,8 @@ const PlayerVsPlayerSelect = () => {
             }
         }
 
-        else if(extraPlayers == 3){
-            if(player1Name == "" || player2Name == ""|| player3Name == ""){
+        else if(extraPlayers === 3){
+            if(player1Name === "" || player2Name === ""|| player3Name === ""){
                 alert("All fields must be filled in");
                 return;
             }
@@ -80,8 +80,8 @@ const PlayerVsPlayerSelect = () => {
             }
         }
 
-        else if(extraPlayers == 4){
-            if(player1Name == "" || player2Name == ""|| player3Name == "" || player4Name == ""){
+        else if(extraPlayers === 4){
+            if(player1Name === "" || player2Name === ""|| player3Name === "" || player4Name === ""){
                 alert("All fields must be filled in");
                 
             }
@@ -119,14 +119,14 @@ const PlayerVsPlayerSelect = () => {
                 <label className="playerLabel">Enter Player 2 name:</label>
                 <input className="enterPlayerName" value={player2Name} onInput={e => setPlayer2(e.target.value)}/>
 
-                {(extraPlayers == 3 || extraPlayers == 4) && 
+                {(extraPlayers === 3 || extraPlayers === 4) && 
                 <>
                     <label className="playerLabel">Enter Player 3 name:</label>
                     <input className="enterPlayerName" value={player3Name} onInput={e => setPlayer3(e.target.value)}/>
                 </>
                 }
 
-                {(extraPlayers == 4) && 
+                {(extraPlayers === 4) && 
                     <>
                         <label className="playerLabel">Enter Player 4 name:</label>
                         <input className="enterPlayerName" value={player4Name} onInput={e => setPlayer4(e.target.value)}/>

@@ -18,7 +18,7 @@ const BlankTile = ({blank, setBValue, x ,y}) => {
     }
     //Set the blank value in the blanks state
     const handleSubmit = () => {
-        if(input == ""){
+        if(input === ""){
             alert("Input cannot be blank");
         }
         else{

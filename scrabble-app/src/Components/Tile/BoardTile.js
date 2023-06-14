@@ -20,7 +20,7 @@ const BoardTile = ({ letter, id, x, y}) => {
             let bl = blankTiles[i];
             let blX = bl.x;
             let blY = bl.y;
-            if(x == blX && y == blY){
+            if(x === blX && y === blY){
                 td = "?";
                 tl = letter;
             }

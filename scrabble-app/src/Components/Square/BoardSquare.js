@@ -1,5 +1,4 @@
 import Square from '../Square/Square';
-import { boardMap } from './boardMap';
 import { useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import { removeFromPlayerRack, removeFromSwapRack } from "../../features/rackSlice";
@@ -7,7 +6,7 @@ import { addTile, updateTilePosition } from "../../features/squareSlice";
 import {storeSlicer} from "../../app/store";
 import { changeToBlank, removeBlanks } from '../../features/boardSlice';
 import BlankTile from "../Tile/BlankTile";
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 
 
@@ -71,7 +70,7 @@ const BoardSquare = ({x, y, sqType, pos, children, isBlank, aBlank}) => {
     const addToSquare = async (l, id, index) => {
         //If blank set blank state to true
         //Will display the blank input to the user in the game
-        if(l == "?"){
+        if(l === "?"){
             setBlank(true);
             isBlank(true);
             dispatch(changeToBlank(true));
@@ -114,7 +113,7 @@ const BoardSquare = ({x, y, sqType, pos, children, isBlank, aBlank}) => {
             if(blankPos.length !== 0){
                 for(let i = 0; i < blankPos.length; i++){
                     let bl = blankPos[i];
-                    if(bl.x == checkTile.x && bl.y == checkTile.y){
+                    if(bl.x === checkTile.x && bl.y === checkTile.y){
                         dispatch(removeBlanks(i));    
                     }   
                 }
@@ -136,7 +135,7 @@ const BoardSquare = ({x, y, sqType, pos, children, isBlank, aBlank}) => {
             
             let currentStore = storeSlicer.getState();
             let playerNo;
-            if(gameMode == "pvp"){
+            if(gameMode === "pvp"){
                 playerNo = currentStore.pvpgame.value.turnPlayer;
             }
             else{

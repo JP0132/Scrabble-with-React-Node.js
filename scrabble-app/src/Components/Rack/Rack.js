@@ -1,4 +1,3 @@
-import GameData from "../../JSONData/GameData.json";
 import {DrawTiles} from "./RackHelper";
 import Tile from "../Tile/Tile";
 import "../../StyleSheets/Rack.css";
@@ -9,7 +8,6 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
-import { actioncreators } from "../../state/action-creator/allActionsCreators";
 import { addToPlayerRack, removeFromSwapRack } from "../../features/rackSlice";
 import { removeFromSquare} from "../../features/squareSlice";
 import RackBtn from '../Buttons/RackBtn';
@@ -23,10 +21,9 @@ const Rack = ({handlePlayWord, handleRackShuffle, handleRackSwap, handleClearBoa
     
     //Which player rack it is
     var playerNumber;
-    if(gameMode == "pvp"){
+    if(gameMode === "pvp"){
         let currentStore = storeSlicer.getState();
         playerNumber = currentStore.pvpgame.value.turnPlayer;
-        playerNumber = playerNumber;
     }
     else{
         playerNumber = "player";
@@ -53,8 +50,8 @@ const Rack = ({handlePlayWord, handleRackShuffle, handleRackSwap, handleClearBoa
     
     //Draw new tiles for the user at the start of their turn
     useEffect(() => {
-        if(gameMode == "pvp"){
-            if(userRack.length < 7 && pvpDrawn == false){
+        if(gameMode === "pvp"){
+            if(userRack.length < 7 && pvpDrawn === false){
                 let noOfTilesNeeded = 7 - userRack.length;
                 let newTiles;
                 newTiles = DrawTiles(noOfTilesNeeded);
@@ -65,7 +62,7 @@ const Rack = ({handlePlayWord, handleRackShuffle, handleRackSwap, handleClearBoa
             }
         }
         else{
-            if(userRack.length < 7 && playerTd == false){
+            if(userRack.length < 7 && playerTd === false){
                 let noOfTilesNeeded = 7 - userRack.length;
                 let newTiles;
                 newTiles = DrawTiles(noOfTilesNeeded);
@@ -79,12 +76,12 @@ const Rack = ({handlePlayWord, handleRackShuffle, handleRackSwap, handleClearBoa
 
     //Game start, draw tiles for all the players
     useEffect(() => {
-        if(gameMode == "pvp"){
+        if(gameMode === "pvp"){
             let currentStore = storeSlicer.getState();
             let pvp2Drawn = currentStore.pvpgame.value.player2Drawn;
             let pvp3Drawn = currentStore.pvpgame.value.player3Drawn;
             let pvp4Drawn = currentStore.pvpgame.value.player4Drawn;
-            if(turnNumber == 1 &&  pvp2Drawn == false  &&  pvp3Drawn == false  &&  pvp4Drawn == false){
+            if(turnNumber === 1 &&  pvp2Drawn === false  &&  pvp3Drawn === false  &&  pvp4Drawn === false){
                 let noOfPlayers = currentStore.pvpgame.value.noOfPlayers;
                 for(let i = 2; i < noOfPlayers+1; i++){
                     let newPlayerRack = DrawTiles(7);
@@ -96,7 +93,7 @@ const Rack = ({handlePlayWord, handleRackShuffle, handleRackSwap, handleClearBoa
             }
         }
         else{
-            if(turnNumber == 1 && computerTd == false){
+            if(turnNumber === 1 && computerTd === false){
                 let compRack = DrawTiles(7);
                 dispatch(setComputerRack(compRack));
                 dispatch(hasCompTileDrawn(true));
@@ -143,7 +140,7 @@ const Rack = ({handlePlayWord, handleRackShuffle, handleRackSwap, handleClearBoa
             }
         }
         let playerNo;
-        if(gameMode == "pvp"){
+        if(gameMode === "pvp"){
             playerNo = currentStore.pvpgame.value.turnPlayer;
         }
         else{

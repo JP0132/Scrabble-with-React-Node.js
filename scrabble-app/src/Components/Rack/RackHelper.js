@@ -1,8 +1,8 @@
-import LetterData from '../../JSONData/LetterData.json';
+
 import {storeSlicer} from "../../app/store";
-import { useDispatch, useSelector } from "react-redux";
+
 import { addTileToBag, removeTileFromBag } from "../../features/tilebagSlice";
-import { useState, useEffect } from "react";
+
 
 //Helper to draw the tiles.
 export function DrawTiles(num) {

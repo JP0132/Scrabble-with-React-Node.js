@@ -38,7 +38,7 @@ function renderSquare(squareNum, y, x, tilePositions, boardElement, blankPositio
     for(let i = 0; i < sqTypeKeys.length; i++){
         const currentType = BoardCoords[sqTypeKeys[i]];
         for(let j = 0; j < currentType.length; j++){
-            if(currentType[j].x == x && currentType[j].y == y){
+            if(currentType[j].x === x && currentType[j].y === y){
                 type = sqTypeKeys[i];
                 break;
             }
@@ -61,7 +61,7 @@ function renderTile(x, y, tilePos, blankPositions){
             if(blankPositions.length !== 0){
                 for(let j = 0; j < blankPositions.length; j++){
                     let blank= blankPositions[j];
-                    if(blank.x == currentTile.x && blank.y == currentTile.y){
+                    if(blank.x === currentTile.x && blank.y === currentTile.y){
                         return <Tile key={currentTile.id} letter={blank.letter} id={currentTile.id} index={currentTile.index} style={{position:'absolute'}} isBlank={true}/>;
                     }
                 }

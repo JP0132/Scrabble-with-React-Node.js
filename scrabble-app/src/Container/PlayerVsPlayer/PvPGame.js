@@ -26,6 +26,7 @@ import HomeButton from '../../Components/Buttons/HomeButton';
 const PvPGame = () => {
     //Remove the background image
     document.body.style.backgroundImage = 'none';
+    var playerScoresVar = [];
 
     //Change the route when used
     const history =  useHistory();

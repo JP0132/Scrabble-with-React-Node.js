@@ -21,7 +21,7 @@ const Swap = ({handleCancelSwap, setSwap}) => {
 
     //Which player rack it is
     let playerNumber;
-    if(gameMode == "pvp"){
+    if(gameMode === "pvp"){
         let currentStore = storeSlicer.getState();
         playerNumber = currentStore.pvpgame.value.turnPlayer;
     }
@@ -96,7 +96,7 @@ const Swap = ({handleCancelSwap, setSwap}) => {
 
         else if(!swapFound){
             let playerNo;
-            if(gameMode == "pvp"){
+            if(gameMode === "pvp"){
                 playerNo = currentStore.pvpgame.value.turnPlayer;
             }
             else{
@@ -114,7 +114,7 @@ const Swap = ({handleCancelSwap, setSwap}) => {
         let newTiles = DrawTiles(noOfTilesNeeded);
         let currentStore = storeSlicer.getState();
         let playerNo;
-        if(gameMode == "pvp"){
+        if(gameMode === "pvp"){
             playerNo = currentStore.pvpgame.value.turnPlayer;
         }
         else{

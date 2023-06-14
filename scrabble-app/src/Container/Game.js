@@ -2,9 +2,7 @@ import './Game.css';
 import Board from '../Components/Board/Board';
 import Rack from '../Components/Rack/Rack';
 import GameBtn from '../Components/Buttons/GameBtn';
-import GameData from '../JSONData/GameData.json'
 import { useEffect, useState } from 'react';
-import {MakeMove} from '../Helper/ComputerMove';
 import {storeSlicer} from "../app/store";
 import { addToComputerRack, removeTileFromComputerRack, restRackState, setComputerRack, shuffleRack, updateRack } from "../features/rackSlice";
 import { useDispatch, useSelector } from 'react-redux';
@@ -101,10 +99,10 @@ const Game = () => {
             }
         }
         
-        if(playerRack.length == 0){
+        if(playerRack.length === 0){
             finalPlayerScore = finalPlayerScore + computerDeductPoints;
         }
-        if(computerRack.length == 0){
+        if(computerRack.length === 0){
             finalComputerScore = finalComputerScore + playerDeductPoints;
         }
 
@@ -119,7 +117,7 @@ const Game = () => {
             dispatch(setWinner({name:"Player", score: finalPlayerScore}));
         }
 
-        else if(finalComputerScore == finalPlayerScore){
+        else if(finalComputerScore === finalPlayerScore){
             if(currentComputerScore > currentPlayerScore){
                 dispatch(setWinner({name: "BIT SCRABBLE", score: finalComputerScore}));
                 dispatch(setLosers({name:"Player", score: finalPlayerScore}));
@@ -273,7 +271,7 @@ const Game = () => {
                     let currentBoard = currentStore.board.value.currentBoard;
                   
 
-                    if(compMove.direction == "R"){
+                    if(compMove.direction === "R"){
                         let row = compMove.y;
                         let currentX = compMove.start;
                         for(let i = 0; i < compMove.word.length; i++){
