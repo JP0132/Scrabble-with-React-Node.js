@@ -12,9 +12,18 @@ This is my final year project where I created an interactive user interface (UI)
 * Created a searching algorithm to test letter combination against the DAWG to find valid words.
 
 
-## How it works and looks.
+## How it works and looks.  
 
-<video src='React App — Mozilla Firefox 2023-06-14 15-21-55.mp4' />
+The video has not captured it but, when dragging the tile, a transparent version of the tile is being dragged along.
+
+
+https://github.com/JP0132/Scrabble-with-React-Node.js/assets/78804278/83db2ed2-2c74-44bf-b59d-87166db59f20
+
+
+
+
+https://github.com/JP0132/Scrabble-with-React-Node.js/assets/78804278/0d213bbb-13eb-4891-a0f3-f2410a878ac2
+
 
 ## How to run.
 
